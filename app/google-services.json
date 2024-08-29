@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "580622165415",
+    "project_id": "anidex-6c1f7",
+    "storage_bucket": "anidex-6c1f7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580622165415:android:ab21521167ab2905b84282",
+        "android_client_info": {
+          "package_name": "com.skhkma.anidex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABApVhYSaluPwSlqMvkvOINqErbqMmXd8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
