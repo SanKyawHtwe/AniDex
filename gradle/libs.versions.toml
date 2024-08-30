@@ -13,6 +13,7 @@ googleService = "4.4.2"
 crashlytics = "3.0.2"
 firebasePerf = "1.4.2"
 uiTextGoogleFonts = "1.6.8"
+detektGradlePlugin = "1.23.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,3 +42,4 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 google-services = { id = "com.google.gms.google-services", version.ref = "googleService" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 firebase-perf = { id="com.google.firebase.firebase-perf", version.ref = "firebasePerf"}
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektGradlePlugin" }
