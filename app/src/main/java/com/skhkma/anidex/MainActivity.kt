@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.compose.AniDexTheme
+import com.skhkma.anidex.features.onboarding.OnboardingScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,31 +21,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             AniDexTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    OnboardingScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true, fontScale = 1.0f)
-@Preview(showBackground = true, fontScale = 2.0f)
-@Composable
-fun GreetingPreview() {
-    AniDexTheme {
-        Greeting("World")
     }
 }

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AniDex</string>
+    <string name="onboarding_header">Welcome to AniDex!</string>
+    <string name="onboarding_body">Welcome to AniDex!</string>
 </resources>
