@@ -1,11 +1,20 @@
-package com.skhkma.anidex.features.home
+package com.skhkma.anidex.features.home.ui.screen
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,15 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.compose.AniDexTheme
 import com.skhkma.anidex.R
 import kotlinx.serialization.Serializable
 
@@ -85,6 +91,8 @@ fun HomeScreen(
                                 when (index) {
                                     0 -> AnimeRoute
                                     1 -> MangaRoute
+                                    2 -> FavouriteRoute
+                                    3 -> ProfileRoute
                                     else -> AnimeRoute
                                 }
                             ) {
@@ -103,15 +111,52 @@ fun HomeScreen(
 
 
         NavHost(
+            modifier = Modifier.padding(it),
             navController = navController,
             startDestination = AnimeRoute,
-            modifier = Modifier.padding(it)
-        ) {
-            composable<AnimeRoute> {
-                AnimeScreen()
-            }
+            enterTransition = {
+                slideInVertically(
+                    animationSpec = tween(500),
+                    initialOffsetY = {
+                        it / 2
+                    }
+                ) + fadeIn()
+            },
+            exitTransition = {
+                slideOutVertically(
+                    animationSpec = tween(300),
+                    targetOffsetY = {
+                        it / 2
+                    }
+                ) + fadeOut()
+            },
+            popEnterTransition = {
+                slideInVertically(
+                    animationSpec = tween(500),
+                    initialOffsetY = {
+                        it / 2
+                    }
+                ) + fadeIn()
+            },
+            popExitTransition = {
+                slideOutVertically(
+                    animationSpec = tween(300),
+                    targetOffsetY = {
+                        it / 2
+                    }
+                ) + fadeOut()
+            },
+
+            ) {
+            animeScreen()
             composable<MangaRoute> {
                 MangaScreen()
+            }
+            composable<FavouriteRoute> {
+                FavouriteScreen()
+            }
+            composable<ProfileRoute> {
+                ProfileScreen()
             }
         }
     }

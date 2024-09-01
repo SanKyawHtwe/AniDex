@@ -10,7 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,14 +32,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
 import com.skhkma.anidex.R
-import com.skhkma.anidex.features.home.HomeRoute
 import kotlinx.serialization.Serializable
 
 private const val PAGE_COUNT = 3
 
 @Serializable
 data object OnboardingRoute
-
 
 fun NavGraphBuilder.onboardingScreen(
     onNavigateToHome: () -> Unit

@@ -80,4 +80,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
+    implementation(libs.bundles.ktor.bundle)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation (libs.koin.androidx.compose)
 }
