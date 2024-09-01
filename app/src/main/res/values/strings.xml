@@ -2,4 +2,8 @@
     <string name="app_name">AniDex</string>
     <string name="onboarding_header">Welcome to AniDex!</string>
     <string name="onboarding_body">Welcome to AniDex!</string>
+    <string name="anime">Anime</string>
+    <string name="manga">Manga</string>
+    <string name="favourite">favourite</string>
+    <string name="profile">profile</string>
 </resources>

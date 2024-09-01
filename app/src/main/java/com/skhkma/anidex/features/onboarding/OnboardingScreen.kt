@@ -29,13 +29,34 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
 import com.skhkma.anidex.R
+import com.skhkma.anidex.features.home.HomeRoute
+import kotlinx.serialization.Serializable
 
 private const val PAGE_COUNT = 3
 
+@Serializable
+data object OnboardingRoute
+
+
+fun NavGraphBuilder.onboardingScreen(
+    onNavigateToHome: () -> Unit
+) {
+    composable<OnboardingRoute> {
+        OnboardingScreen(
+            onNavigateToHome = onNavigateToHome
+        )
+    }
+}
+
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier) {
+fun OnboardingScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToHome: () -> Unit
+) {
     val pagerState = rememberPagerState(pageCount = {
         PAGE_COUNT
     })
@@ -89,7 +110,9 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
             exit = fadeOut(),
             visible = pagerState.currentPage == PAGE_COUNT - 1
         ) {
-            Button(onClick = { }) {
+            Button(onClick = {
+                onNavigateToHome()
+            }) {
                 Text(text = "Get Started")
             }
         }
@@ -100,6 +123,8 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun OnboardingScreenPreview() {
     AniDexTheme {
-        OnboardingScreen()
+        OnboardingScreen(
+            onNavigateToHome = {}
+        )
     }
 }

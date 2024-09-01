@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.compose.AniDexTheme
+import com.skhkma.anidex.features.home.HomeScreen
 import com.skhkma.anidex.features.onboarding.OnboardingScreen
+import com.skhkma.anidex.navigation.AniDexNavHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,12 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AniDexTheme {
-                Scaffold(
-                ) { innerPadding ->
-                    OnboardingScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AniDexNavHost()
             }
         }
     }
