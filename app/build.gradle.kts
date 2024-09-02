@@ -84,4 +84,5 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation (libs.koin.androidx.compose)
+    implementation(libs.firebase.auth)
 }
