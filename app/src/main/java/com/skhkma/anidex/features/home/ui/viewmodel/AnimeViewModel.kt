@@ -15,6 +15,7 @@ class AnimeViewModel(
     private var _uiState: MutableStateFlow<TrendingAnimeUiState> = MutableStateFlow(TrendingAnimeUiState.Loading)
     var uiState : StateFlow<TrendingAnimeUiState> = _uiState
 
+
     init {
         fetchAnimeList()
     }
