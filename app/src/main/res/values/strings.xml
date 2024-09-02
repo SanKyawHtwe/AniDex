@@ -4,6 +4,6 @@
     <string name="onboarding_body">Welcome to AniDex!</string>
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
-    <string name="favourite">favourite</string>
-    <string name="profile">profile</string>
+    <string name="profile">Profile</string>
+    <string name="watchlist">Watchlist</string>
 </resources>

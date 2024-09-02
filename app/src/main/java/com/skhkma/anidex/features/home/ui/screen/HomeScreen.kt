@@ -4,12 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -43,7 +38,7 @@ data object HomeRoute
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     object Anime : Screen("anime", R.string.anime)
     object Manga : Screen("manga", R.string.manga)
-    object Favourite : Screen("favourite", R.string.favourite)
+    object Watchlist : Screen("watchlist", R.string.watchlist)
     object Profile : Screen("profile", R.string.profile)
 }
 
@@ -69,7 +64,7 @@ fun HomeScreen(
     val items = listOf(
         Screen.Anime,
         Screen.Manga,
-        Screen.Favourite,
+        Screen.Watchlist,
         Screen.Profile
     )
 
@@ -91,7 +86,7 @@ fun HomeScreen(
                                 when (index) {
                                     0 -> AnimeRoute
                                     1 -> MangaRoute
-                                    2 -> FavouriteRoute
+                                    2 -> WatchlistRoute
                                     3 -> ProfileRoute
                                     else -> AnimeRoute
                                 }
@@ -152,8 +147,8 @@ fun HomeScreen(
             composable<MangaRoute> {
                 MangaScreen()
             }
-            composable<FavouriteRoute> {
-                FavouriteScreen()
+            composable<WatchlistRoute> {
+                WatchlistScreen()
             }
             composable<ProfileRoute> {
                 ProfileScreen()

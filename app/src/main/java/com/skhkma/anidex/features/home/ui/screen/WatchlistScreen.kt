@@ -9,10 +9,10 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object FavouriteRoute
+data object WatchlistRoute
 
 @Composable
-fun FavouriteScreen(
+fun WatchlistScreen(
     modifier: Modifier = Modifier
 ){
     Box(
