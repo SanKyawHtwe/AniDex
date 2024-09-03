@@ -24,11 +24,12 @@ fun AniDexProgressButton(
     modifier: Modifier = Modifier,
     text: String,
     isLoading: Boolean,
+    isEnable: Boolean,
     onClick: () -> Unit,
 ) {
     Box(modifier = modifier) {
         Button(
-            enabled = !isLoading,
+            enabled = isEnable && !isLoading,
             onClick = onClick,
         ) {
             Text(
@@ -66,19 +67,21 @@ private fun AniDexProgressButtonLoadingPreview() {
         AniDexProgressButton(
             text = "Sign Up",
             isLoading = true,
+            isEnable = true
         ) {
 
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun AniDexProgressButtonPreview() {
     AniDexTheme {
         AniDexProgressButton(
             text = "Sign Up",
             isLoading = false,
+            isEnable = false
         ) {
 
         }

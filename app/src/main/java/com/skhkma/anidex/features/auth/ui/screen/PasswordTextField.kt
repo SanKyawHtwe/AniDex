@@ -20,6 +20,8 @@ fun PasswordTextField(
     modifier: Modifier = Modifier,
     password: String,
     isVisible: Boolean = false,
+    isError: Boolean,
+    validateResult: ValidateResult,
     onEyeClick: () -> Unit,
     onPasswordChange: (String) -> Unit
 ) {
@@ -27,6 +29,10 @@ fun PasswordTextField(
         modifier = modifier,
         value = password,
         onValueChange = onPasswordChange,
+        isError = isError,
+        supportingText = {
+            if (isError) Text(getErrorMessage(validateResult))
+        },
         label = { Text("Password") },
         singleLine = true,
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -45,14 +51,42 @@ fun PasswordTextField(
     )
 }
 
+private fun getErrorMessage(validateResult: ValidateResult): String {
+    return when (validateResult) {
+        ValidateResult.MinLengthError -> "Minimum length must be 8."
+        ValidateResult.MaxLengthError -> "Maximum length must be 40."
+        ValidateResult.SpecialCharError -> "Must include one special character."
+        ValidateResult.DigitError -> "Must include one digit."
+        ValidateResult.CharError -> "Must include one character."
+        ValidateResult.CapitalCharError -> "Must include one capitalized character."
+        ValidateResult.Success -> ""
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-private fun PasswordTextFieldPreview() {
+private fun PasswordTextFieldSuccessPreview() {
     AniDexTheme {
         PasswordTextField(
             password = "",
+            isError = false,
+            validateResult = ValidateResult.Success,
             onEyeClick = {},
-            onPasswordChange = {_ -> }
+            onPasswordChange = { _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PasswordTextFieldWithErrorPreview() {
+    AniDexTheme {
+        PasswordTextField(
+            password = "",
+            isError = true,
+            validateResult = ValidateResult.MinLengthError,
+            onEyeClick = {},
+            onPasswordChange = { _ -> }
         )
     }
 }
