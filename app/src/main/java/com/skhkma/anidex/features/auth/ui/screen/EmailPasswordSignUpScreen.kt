@@ -2,6 +2,7 @@ package com.skhkma.anidex.features.auth.ui.screen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
 import com.skhkma.anidex.common.ui.AniDexProgressButton
+import com.skhkma.anidex.common.ui.ErrorDialog
 import com.skhkma.anidex.features.auth.ui.viewmodel.EmailPasswordSignUpViewModel
 import com.skhkma.anidex.features.auth.ui.viewmodel.EmailSignUpUiState
 import kotlinx.serialization.Serializable
@@ -39,6 +41,9 @@ fun NavGraphBuilder.emailPasswordSignUpScreen() {
             uiState = uiState.value,
             onSignUpClick = { email, password ->
                 viewModel.createAccount(email, password)
+            },
+            onErrorDismissClick = {
+                viewModel.setUiStateToIdle()
             }
         )
     }
@@ -52,50 +57,61 @@ fun NavController.navigateToEmailPasswordSignUpScreen() {
 private fun Screen(
     modifier: Modifier = Modifier,
     uiState: EmailSignUpUiState,
-    onSignUpClick: (String, String) -> Unit
+    onSignUpClick: (String, String) -> Unit,
+    onErrorDismissClick: () -> Unit,
 ) {
     Scaffold(modifier = modifier) { contentPadding ->
-        Column(
+        Box(
             modifier = Modifier
-                .padding(contentPadding)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            .padding(contentPadding)
+            .fillMaxSize()
         ) {
-            var email by rememberSaveable { mutableStateOf("") }
-            var isEmailError by rememberSaveable { mutableStateOf(false) }
-
-            var password by rememberSaveable { mutableStateOf("") }
-            var isPasswordError by rememberSaveable { mutableStateOf(false) }
-            var isPasswordShown by rememberSaveable { mutableStateOf(false) }
-
-            EmailTextField(
-                email = email,
-                isError = isEmailError,
-                onEmailChange = {
-                    email = it
-                    isEmailError = !isValidEmail(it)
-                }
-            )
-            Spacer(modifier = Modifier.size(24.dp))
-            PasswordTextField(
-                password = password,
-                isVisible = isPasswordShown,
-                isError = isPasswordError,
-                validateResult = validatePassword(password),
-                onEyeClick = { isPasswordShown = !isPasswordShown },
-                onPasswordChange = {
-                    password = it
-                    isPasswordError = validatePassword(password) !is ValidateResult.Success
-                }
-            )
-            Spacer(modifier = Modifier.size(24.dp))
-            AniDexProgressButton(
-                text = "Sign Up",
-                isLoading = uiState is EmailSignUpUiState.Loading,
-                isEnable = email.isNotBlank() && password.isNotBlank()
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                onSignUpClick(email, password)
+                var email by rememberSaveable { mutableStateOf("") }
+                var isEmailError by rememberSaveable { mutableStateOf(false) }
+
+                var password by rememberSaveable { mutableStateOf("") }
+                var isPasswordError by rememberSaveable { mutableStateOf(false) }
+                var isPasswordShown by rememberSaveable { mutableStateOf(false) }
+
+                EmailTextField(
+                    email = email,
+                    isError = isEmailError,
+                    onEmailChange = {
+                        email = it
+                        isEmailError = !isValidEmail(it)
+                    }
+                )
+                Spacer(modifier = Modifier.size(24.dp))
+                PasswordTextField(
+                    password = password,
+                    isVisible = isPasswordShown,
+                    isError = isPasswordError,
+                    validateResult = validatePassword(password),
+                    onEyeClick = { isPasswordShown = !isPasswordShown },
+                    onPasswordChange = {
+                        password = it
+                        isPasswordError = validatePassword(password) !is ValidateResult.Success
+                    }
+                )
+                Spacer(modifier = Modifier.size(24.dp))
+                AniDexProgressButton(
+                    text = "Sign Up",
+                    isLoading = uiState is EmailSignUpUiState.Loading,
+                    isEnable = email.isNotBlank() && password.isNotBlank()
+                ) {
+                    onSignUpClick(email, password)
+                }
+            }
+            if (uiState is EmailSignUpUiState.Error) {
+                ErrorDialog(
+                    text = uiState.error,
+                    onDismissClick = onErrorDismissClick,
+                )
             }
         }
     }
@@ -156,7 +172,8 @@ private fun ScreenLoadingPreview() {
     AniDexTheme {
         Screen(
             uiState = EmailSignUpUiState.Loading,
-            onSignUpClick = { _, _ -> }
+            onSignUpClick = { _, _ -> },
+            onErrorDismissClick = {},
         )
     }
 }
@@ -164,11 +181,12 @@ private fun ScreenLoadingPreview() {
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
-private fun ScreenPreview() {
+private fun ScreenErrorPreview() {
     AniDexTheme {
         Screen(
-            uiState = EmailSignUpUiState.Success(""),
-            onSignUpClick = { _, _ -> }
+            uiState = EmailSignUpUiState.Error("Something went wrong!"),
+            onSignUpClick = { _, _ -> },
+            onErrorDismissClick = {},
         )
     }
 }

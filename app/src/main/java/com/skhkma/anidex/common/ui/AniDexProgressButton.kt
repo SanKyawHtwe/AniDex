@@ -46,6 +46,7 @@ fun AniDexProgressButton(
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(24.dp),
+                color = MaterialTheme.colorScheme.secondary,
                 strokeCap = StrokeCap.Butt,
                 trackColor = MaterialTheme.colorScheme.primary,
             )

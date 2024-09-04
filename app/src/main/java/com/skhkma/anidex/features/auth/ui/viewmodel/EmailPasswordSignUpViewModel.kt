@@ -34,4 +34,8 @@ class EmailPasswordSignUpViewModel(private val authRepository: AuthRepository) :
         }
     }
 
+    fun setUiStateToIdle() {
+        _uiState.value = EmailSignUpUiState.Idle
+    }
+
 }
