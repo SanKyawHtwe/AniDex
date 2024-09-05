@@ -1,6 +1,7 @@
 package com.skhkma.anidex.features.auth.ui.screen
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,31 +10,52 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.skhkma.anidex.common.ui.AniDexProgressButton
 import com.skhkma.anidex.common.ui.ErrorDialog
 import com.skhkma.anidex.features.auth.ui.viewmodel.EmailPasswordSignUpViewModel
 import com.skhkma.anidex.features.auth.ui.viewmodel.EmailSignUpUiState
+import com.skhkma.anidex.features.home.ui.screen.HomeRoute
+import com.skhkma.anidex.features.home.ui.screen.HomeScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
 data object EmailPasswordSignUpRoute
 
-fun NavGraphBuilder.emailPasswordSignUpScreen() {
+fun NavController.navigateToEmailPasswordSignUpScreen() {
+    navigate(EmailPasswordSignUpRoute)
+}
+
+fun NavGraphBuilder.emailPasswordSignUpScreen(
+    onNavigateToHome: () -> Unit
+) {
     composable<EmailPasswordSignUpRoute> {
         val viewModel: EmailPasswordSignUpViewModel = koinViewModel()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -44,13 +66,15 @@ fun NavGraphBuilder.emailPasswordSignUpScreen() {
             },
             onErrorDismissClick = {
                 viewModel.setUiStateToIdle()
-            }
+            },
+            onVerifyEmailSent = { scope, snackbarHostState ->
+                scope.launch {
+                    snackbarHostState.showSnackbar("Snackbar")
+                }
+            },
+            onNavigateToHome = onNavigateToHome
         )
     }
-}
-
-fun NavController.navigateToEmailPasswordSignUpScreen() {
-    navigate(EmailPasswordSignUpRoute)
 }
 
 @Composable
@@ -59,12 +83,55 @@ private fun Screen(
     uiState: EmailSignUpUiState,
     onSignUpClick: (String, String) -> Unit,
     onErrorDismissClick: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onVerifyEmailSent: (CoroutineScope, SnackbarHostState) -> Unit
 ) {
-    Scaffold(modifier = modifier) { contentPadding ->
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    if (uiState is EmailSignUpUiState.VerificationEmailSent) {
+        onVerifyEmailSent(
+            scope, snackbarHostState
+        )
+    }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        // Do something with your state
+        // You may want to use DisposableEffect or other alternatives
+        // instead of LaunchedEffect
+        when (lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                Log.d("Navigated", "Screen: on resume")
+                val isVerified = try {
+                    Firebase.auth.currentUser?.reload()?.await()
+                    Firebase.auth.currentUser?.isEmailVerified == true
+                } catch (e: Exception) {
+                    false
+                }
+                if (isVerified) {
+                    onNavigateToHome()
+                    Log.d("Navigated", isVerified.toString())
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+    ) { contentPadding ->
         Box(
             modifier = Modifier
-            .padding(contentPadding)
-            .fillMaxSize()
+                .padding(contentPadding)
+                .fillMaxSize()
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -117,27 +184,29 @@ private fun Screen(
     }
 }
 
-private fun isValidEmail(email: String): Boolean {
+fun isValidEmail(email: String): Boolean {
     val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$"
     return email.matches(Regex(emailRegex))
 }
 
 sealed class ValidateResult {
-    data object Success: ValidateResult()
-    data object MinLengthError: ValidateResult()
-    data object MaxLengthError: ValidateResult()
-    data object SpecialCharError: ValidateResult()
-    data object DigitError: ValidateResult()
-    data object CharError: ValidateResult()
-    data object CapitalCharError: ValidateResult()
+    data object Success : ValidateResult()
+    data object MinLengthError : ValidateResult()
+    data object MaxLengthError : ValidateResult()
+    data object SpecialCharError : ValidateResult()
+    data object DigitError : ValidateResult()
+    data object CharError : ValidateResult()
+    data object CapitalCharError : ValidateResult()
 }
 
-private fun validatePassword(password: String): ValidateResult {
-    if (password.length < 8) {
+const val MINIMUM_PASSWORD_LENGTH = 8
+const val MAXIMUM_PASSWORD_LENGTH = 40
+fun validatePassword(password: String): ValidateResult {
+    if (password.length < MINIMUM_PASSWORD_LENGTH) {
         return ValidateResult.MinLengthError
     }
 
-    if (password.length > 40) {
+    if (password.length > MAXIMUM_PASSWORD_LENGTH) {
         return ValidateResult.MaxLengthError
     }
 
@@ -148,17 +217,17 @@ private fun validatePassword(password: String): ValidateResult {
     }
 
     val containDigits = password.any { it.isDigit() }
-    if (!containDigits){
+    if (!containDigits) {
         return ValidateResult.DigitError
     }
 
     val containLetters = password.any { it.isLetter() }
-    if (!containLetters){
+    if (!containLetters) {
         return ValidateResult.CharError
     }
 
     val containCapitalizedLetters = password.any { it.isLetter() && it.isUpperCase() }
-    if (!containCapitalizedLetters){
+    if (!containCapitalizedLetters) {
         return ValidateResult.CapitalCharError
     }
 
@@ -174,6 +243,8 @@ private fun ScreenLoadingPreview() {
             uiState = EmailSignUpUiState.Loading,
             onSignUpClick = { _, _ -> },
             onErrorDismissClick = {},
+            onVerifyEmailSent = { _, _ -> },
+            onNavigateToHome = {}
         )
     }
 }
@@ -187,6 +258,8 @@ private fun ScreenErrorPreview() {
             uiState = EmailSignUpUiState.Error("Something went wrong!"),
             onSignUpClick = { _, _ -> },
             onErrorDismissClick = {},
+            onVerifyEmailSent = { _, _ -> },
+            onNavigateToHome = {}
         )
     }
 }

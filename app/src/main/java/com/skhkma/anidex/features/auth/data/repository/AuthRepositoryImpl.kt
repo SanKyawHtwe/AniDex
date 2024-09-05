@@ -8,4 +8,7 @@ class AuthRepositoryImpl(private val authRemoteDataSource: AuthRemoteDataSource)
         return authRemoteDataSource.signUpWithEmailPassword(email, password)
     }
 
+    override suspend fun verifyEmail(): Result<Unit> {
+        return authRemoteDataSource.verifyEmail()
+    }
 }

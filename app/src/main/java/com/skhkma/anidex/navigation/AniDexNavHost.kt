@@ -36,6 +36,10 @@ fun AniDexNavHost() {
                 navController.navigateToEmailPasswordSignUpScreen()
             }
         )
-        emailPasswordSignUpScreen()
+        emailPasswordSignUpScreen(
+            onNavigateToHome = {
+                navController.navigateToHomeScreen()
+            }
+        )
     }
 }

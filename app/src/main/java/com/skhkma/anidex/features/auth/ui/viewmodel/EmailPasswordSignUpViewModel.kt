@@ -12,6 +12,7 @@ sealed class EmailSignUpUiState {
     data object Loading : EmailSignUpUiState()
     data class Success(val message: String) : EmailSignUpUiState()
     data class Error(val error: String) : EmailSignUpUiState()
+    data object VerificationEmailSent: EmailSignUpUiState()
 }
 
 class EmailPasswordSignUpViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -26,12 +27,29 @@ class EmailPasswordSignUpViewModel(private val authRepository: AuthRepository) :
             authRepository.signUpWithEmailPassword(email, password).fold(
                 {
                     _uiState.value = EmailSignUpUiState.Success(it)
+                   verifyEmail(
+                        errorMessage = "Verification failed"
+                    )
                 },
                 {
                     _uiState.value = EmailSignUpUiState.Error(it.message ?: "Something went wrong!")
                 }
             )
         }
+    }
+
+    fun verifyEmail(errorMessage: String){
+       viewModelScope.launch {
+           _uiState.value = EmailSignUpUiState.Loading
+           authRepository.verifyEmail().fold(
+               {
+                   _uiState.value = EmailSignUpUiState.VerificationEmailSent
+               },
+               {
+                   _uiState.value = EmailSignUpUiState.Error(it.message ?: errorMessage)
+               }
+           )
+       }
     }
 
     fun setUiStateToIdle() {

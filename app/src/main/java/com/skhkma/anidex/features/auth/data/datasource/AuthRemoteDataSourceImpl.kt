@@ -20,4 +20,19 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSource {
         }
     }
 
+    override suspend fun verifyEmail(): Result<Unit> {
+        return try {
+            val currentUser = Firebase.auth.currentUser
+            currentUser!!.sendEmailVerification().await()
+            return Result.success(Unit)
+        }
+        catch (e:Exception){
+            Result.failure(e)
+        }
+
+
+
+    }
+
+
 }
