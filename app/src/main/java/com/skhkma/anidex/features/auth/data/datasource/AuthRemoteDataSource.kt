@@ -6,4 +6,6 @@ interface AuthRemoteDataSource {
 
     suspend fun verifyEmail(): Result<Unit>
 
+    suspend fun isVerified(): Boolean
+
 }

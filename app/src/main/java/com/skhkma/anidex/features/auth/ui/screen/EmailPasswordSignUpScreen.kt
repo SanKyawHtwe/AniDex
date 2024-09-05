@@ -32,17 +32,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.skhkma.anidex.common.ui.AniDexProgressButton
 import com.skhkma.anidex.common.ui.ErrorDialog
 import com.skhkma.anidex.features.auth.ui.viewmodel.EmailPasswordSignUpViewModel
 import com.skhkma.anidex.features.auth.ui.viewmodel.EmailSignUpUiState
-import com.skhkma.anidex.features.home.ui.screen.HomeRoute
-import com.skhkma.anidex.features.home.ui.screen.HomeScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -69,8 +64,11 @@ fun NavGraphBuilder.emailPasswordSignUpScreen(
             },
             onVerifyEmailSent = { scope, snackbarHostState ->
                 scope.launch {
-                    snackbarHostState.showSnackbar("Snackbar")
+                    snackbarHostState.showSnackbar("Verification email sent")
                 }
+            },
+            onResume = {
+                viewModel.isVerified()
             },
             onNavigateToHome = onNavigateToHome
         )
@@ -84,6 +82,7 @@ private fun Screen(
     onSignUpClick: (String, String) -> Unit,
     onErrorDismissClick: () -> Unit,
     onNavigateToHome: () -> Unit,
+    onResume: () -> Unit,
     onVerifyEmailSent: (CoroutineScope, SnackbarHostState) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -108,18 +107,12 @@ private fun Screen(
             Lifecycle.State.STARTED -> {}
             Lifecycle.State.RESUMED -> {
                 Log.d("Navigated", "Screen: on resume")
-                val isVerified = try {
-                    Firebase.auth.currentUser?.reload()?.await()
-                    Firebase.auth.currentUser?.isEmailVerified == true
-                } catch (e: Exception) {
-                    false
-                }
-                if (isVerified) {
-                    onNavigateToHome()
-                    Log.d("Navigated", isVerified.toString())
-                }
+                onResume()
             }
         }
+    }
+    if (uiState is EmailSignUpUiState.EmailVerified){
+        onNavigateToHome()
     }
 
     Scaffold(
@@ -244,7 +237,8 @@ private fun ScreenLoadingPreview() {
             onSignUpClick = { _, _ -> },
             onErrorDismissClick = {},
             onVerifyEmailSent = { _, _ -> },
-            onNavigateToHome = {}
+            onNavigateToHome = {},
+            onResume = {}
         )
     }
 }
@@ -259,7 +253,8 @@ private fun ScreenErrorPreview() {
             onSignUpClick = { _, _ -> },
             onErrorDismissClick = {},
             onVerifyEmailSent = { _, _ -> },
-            onNavigateToHome = {}
+            onNavigateToHome = {},
+            onResume = {}
         )
     }
 }

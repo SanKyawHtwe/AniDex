@@ -13,6 +13,7 @@ sealed class EmailSignUpUiState {
     data class Success(val message: String) : EmailSignUpUiState()
     data class Error(val error: String) : EmailSignUpUiState()
     data object VerificationEmailSent: EmailSignUpUiState()
+    data object EmailVerified : EmailSignUpUiState()
 }
 
 class EmailPasswordSignUpViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -50,6 +51,15 @@ class EmailPasswordSignUpViewModel(private val authRepository: AuthRepository) :
                }
            )
        }
+    }
+
+    fun isVerified(){
+        viewModelScope.launch {
+            val isVerified = authRepository.isVerified()
+            if(isVerified) {
+                _uiState.value = EmailSignUpUiState.EmailVerified
+            }
+        }
     }
 
     fun setUiStateToIdle() {

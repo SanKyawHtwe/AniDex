@@ -11,4 +11,8 @@ class AuthRepositoryImpl(private val authRemoteDataSource: AuthRemoteDataSource)
     override suspend fun verifyEmail(): Result<Unit> {
         return authRemoteDataSource.verifyEmail()
     }
+
+    override suspend fun isVerified(): Boolean {
+         return authRemoteDataSource.isVerified()
+    }
 }

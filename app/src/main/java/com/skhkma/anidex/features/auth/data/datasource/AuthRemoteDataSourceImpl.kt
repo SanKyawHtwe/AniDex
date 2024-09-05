@@ -20,6 +20,7 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSource {
         }
     }
 
+
     override suspend fun verifyEmail(): Result<Unit> {
         return try {
             val currentUser = Firebase.auth.currentUser
@@ -30,8 +31,17 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSource {
             Result.failure(e)
         }
 
+    }
 
-
+    override suspend fun isVerified():Boolean{
+        return try {
+            Firebase.auth.currentUser?.let {
+                it.reload().await()
+                it.isEmailVerified
+            } ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 
 
