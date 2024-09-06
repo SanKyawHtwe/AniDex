@@ -15,10 +15,10 @@ fun AniDexNavHost() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = HomeRoute
+        startDestination = OnboardingRoute
     ) {
         onboardingScreen(
-            onNavigateToHome = {
+            onNavigateToAuthLanding = {
                 navController.navigate(HomeRoute)
             }
         )

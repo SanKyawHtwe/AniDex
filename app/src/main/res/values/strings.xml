@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">AniDex</string>
-    <string name="onboarding_header">Welcome to AniDex!</string>
-    <string name="onboarding_body">Welcome to AniDex!</string>
+    <string name="onboarding_header_first">Discover New Anime &amp; Manga</string>
+    <string name="onboarding_header_second">Manage Your Watchlist</string>
+    <string name="onboarding_header_third">Save Your Favorites</string>
+    <string name="onboarding_body_first">Explore a vast library of anime and manga. Discover new titles that match your taste, all in one place with AniDex.</string>
+    <string name="onboarding_body_second">Keep track of what you’re watching. Add your favorite series to your watchlist and never miss an episode or chapter.</string>
+    <string name="onboarding_body_third">Easily mark and access your top picks. Create your personal collection of favorite anime and manga for quick access anytime.</string>
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
     <string name="profile">Profile</string>
