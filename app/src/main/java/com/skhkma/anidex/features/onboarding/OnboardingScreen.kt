@@ -77,21 +77,21 @@ fun OnboardingScreen(
                 when (page) {
                     0 -> OnboardingContent(
                         modifier = Modifier,
-                        imageId = R.drawable.onboarding_image1,
+                        imageId = R.drawable.onboarding_first_screen_image,
                         headerText = stringResource(R.string.onboarding_header_first),
                         bodyText = stringResource(R.string.onboarding_body_first)
                     )
 
                     1 -> OnboardingContent(
                         modifier = Modifier,
-                        imageId = R.drawable.onboarding_image1,
+                        imageId = R.drawable.onboarding_second_screen_image,
                         headerText = stringResource(R.string.onboarding_header_second),
                         bodyText = stringResource(R.string.onboarding_body_second)
                     )
 
                     2 -> OnboardingContent(
                         modifier = Modifier,
-                        imageId = R.drawable.onboarding_image1,
+                        imageId = R.drawable.onboarding_third_screen_image,
                         headerText = stringResource(R.string.onboarding_header_third),
                         bodyText = stringResource(R.string.onboarding_body_third)
                     )
@@ -139,9 +139,8 @@ fun OnboardingContent(
                 id = imageId
             ),
             modifier = Modifier
-                .size(300.dp)
-                .clip(shape = RoundedCornerShape(18.dp)),
-            contentScale = ContentScale.Crop,
+                .size(300.dp),
+            contentScale = ContentScale.Fit,
             contentDescription = null,
         )
         Spacer(modifier = Modifier.size(20.dp))
