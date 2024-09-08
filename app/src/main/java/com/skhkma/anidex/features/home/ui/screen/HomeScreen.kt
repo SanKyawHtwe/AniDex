@@ -22,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -34,6 +36,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object HomeRoute
 
+fun NavController.navigateToHomeScreen(
+    navOptions: NavOptions? = null
+) {
+    navigate(HomeRoute, navOptions = navOptions)
+}
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     object Anime : Screen("anime", R.string.anime)
@@ -44,10 +51,12 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int) {
 
 fun NavGraphBuilder.homeScreen(
     onNavigateToManga: () -> Unit,
+    onNavigateToAuthLanding: () -> Unit
 ) {
     composable<HomeRoute> {
         HomeScreen(
-            onNavigateToManga = onNavigateToManga
+            onNavigateToManga = onNavigateToManga,
+            onNavigateToAuthLanding = onNavigateToAuthLanding
         )
     }
 }
@@ -55,7 +64,8 @@ fun NavGraphBuilder.homeScreen(
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateToManga: () -> Unit
+    onNavigateToManga: () -> Unit,
+    onNavigateToAuthLanding: () -> Unit
 ) {
 
     var selectedItem by remember { mutableIntStateOf(0) }
@@ -150,9 +160,8 @@ fun HomeScreen(
             composable<WatchlistRoute> {
                 WatchlistScreen()
             }
-            composable<ProfileRoute> {
-                ProfileScreen()
-            }
+
+            profileScreen(onNavigateToAuthLanding = onNavigateToAuthLanding)
         }
     }
 }

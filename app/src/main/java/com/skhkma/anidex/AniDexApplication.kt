@@ -2,6 +2,7 @@ package com.skhkma.anidex
 
 import android.app.Application
 import com.skhkma.anidex.common.di.networkModule
+import com.skhkma.anidex.features.auth.data.di.authModule
 import com.skhkma.anidex.features.home.data.di.animeDataSourceModule
 import com.skhkma.anidex.features.home.data.di.animeRepositoryModule
 import com.skhkma.anidex.features.home.data.di.animeViewModelModule
@@ -16,7 +17,8 @@ class AniDexApplication : Application() {
                 networkModule,
                 animeDataSourceModule,
                 animeRepositoryModule,
-                animeViewModelModule
+                animeViewModelModule,
+                authModule
             )
             androidContext(androidContext = this@AniDexApplication)
         }

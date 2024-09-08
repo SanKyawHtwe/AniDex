@@ -28,16 +28,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
 import com.skhkma.anidex.R
+import com.skhkma.anidex.features.home.ui.screen.HomeRoute
 import kotlinx.serialization.Serializable
 
 private const val PAGE_COUNT = 3
 
 @Serializable
 data object OnboardingRoute
+
+fun NavController.navigateToOnboardingScreen() {
+    navigate(OnboardingRoute)
+}
 
 fun NavGraphBuilder.onboardingScreen(
     onNavigateToHome: () -> Unit
