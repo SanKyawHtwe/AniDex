@@ -15,4 +15,11 @@ class AuthRepositoryImpl(private val authRemoteDataSource: AuthRemoteDataSource)
     override suspend fun isVerified(): Boolean {
          return authRemoteDataSource.isVerified()
     }
+
+    override suspend fun loginWithEmailPassword(email: String, password: String): Result<String> {
+        return authRemoteDataSource.loginWithEmailPassword(
+            email = email,
+            password = password
+        )
+    }
 }

@@ -44,5 +44,19 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSource {
         }
     }
 
+    override suspend fun loginWithEmailPassword(email: String, password: String): Result<String> {
+        return try {
+            val authResult = Firebase.auth.signInWithEmailAndPassword(email, password).await()
+            val uid = authResult.user?.uid
+            if (uid != null) {
+                Result.success(authResult.user!!.uid)
+            } else {
+                Result.failure(Exception("Uid being null!"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
 }

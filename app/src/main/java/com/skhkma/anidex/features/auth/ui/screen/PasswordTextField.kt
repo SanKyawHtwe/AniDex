@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.compose.AniDexTheme
+import com.skhkma.anidex.features.auth.ui.screen.signup.ValidateResult
 
 @Composable
 fun PasswordTextField(

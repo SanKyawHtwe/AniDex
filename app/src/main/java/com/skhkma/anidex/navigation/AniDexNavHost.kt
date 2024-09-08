@@ -1,12 +1,10 @@
 package com.skhkma.anidex.navigation
 
-import AuthLandingRoute
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import authLandingScreen
-import com.skhkma.anidex.features.auth.ui.screen.emailPasswordSignUpScreen
-import com.skhkma.anidex.features.auth.ui.screen.navigateToEmailPasswordSignUpScreen
+import androidx.navigation.navOptions
+import com.skhkma.anidex.features.home.ui.screen.HomeRoute
 import com.skhkma.anidex.features.home.ui.screen.homeScreen
 import com.skhkma.anidex.features.home.ui.screen.navigateToHomeScreen
 import com.skhkma.anidex.features.onboarding.navigateToOnboardingScreen
@@ -14,12 +12,14 @@ import com.skhkma.anidex.features.onboarding.onboardingScreen
 
 
 @Composable
-fun AniDexNavHost() {
+fun AniDexNavHost(
+    isLoggedIn : Boolean
+) {
 
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = AuthLandingRoute
+        startDestination = if (isLoggedIn) HomeRoute else AuthNavRoute
     ) {
         onboardingScreen(
             onNavigateToHome = {
@@ -29,17 +29,19 @@ fun AniDexNavHost() {
         homeScreen(
             onNavigateToManga = {
                 navController.navigateToOnboardingScreen()
+            },
+            onNavigateToAuthLanding = {
+                navController.navigateToAuthNavGraph(
+                    navOptions = navOptions {
+                        popUpTo<HomeRoute>() {
+                            inclusive = true
+                        }
+                    }
+                )
             }
         )
-        authLandingScreen(
-            onEmailPasswordClick = {
-                navController.navigateToEmailPasswordSignUpScreen()
-            }
-        )
-        emailPasswordSignUpScreen(
-            onNavigateToHome = {
-                navController.navigateToHomeScreen()
-            }
+        AuthNav(
+            navController = navController
         )
     }
 }

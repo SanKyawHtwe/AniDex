@@ -9,7 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
 import kotlinx.serialization.Serializable
@@ -17,14 +20,33 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object AuthLandingRoute
 
-fun NavGraphBuilder.authLandingScreen(onEmailPasswordClick: () -> Unit) {
+
+fun NavController.navigateToAuthLandingScreen(
+    navOptions: NavOptions? = null
+) {
+    navigate(
+        route = AuthLandingRoute,
+        navOptions = navOptions
+    )
+}
+
+fun NavGraphBuilder.authLandingScreen(
+    onEmailPasswordClick: () -> Unit,
+    onEmailPasswordLogin: () -> Unit
+) {
     composable<AuthLandingRoute> {
-        AuthLandingScreen(onEmailPasswordClick = onEmailPasswordClick)
+        AuthLandingScreen(
+            onEmailPasswordClick = onEmailPasswordClick,
+            onEmailPasswordLogin = onEmailPasswordLogin)
     }
 }
 
 @Composable
-fun AuthLandingScreen(modifier: Modifier = Modifier, onEmailPasswordClick: () -> Unit) {
+fun AuthLandingScreen(
+    modifier: Modifier = Modifier,
+    onEmailPasswordClick: () -> Unit,
+    onEmailPasswordLogin : () -> Unit
+) {
     Scaffold(modifier = modifier) { contentPadding ->
         Column(
             modifier = Modifier
@@ -36,6 +58,11 @@ fun AuthLandingScreen(modifier: Modifier = Modifier, onEmailPasswordClick: () ->
             Button(onClick = onEmailPasswordClick) {
                 Text("Email/Password Sign Up")
             }
+            Button(
+                onClick = onEmailPasswordLogin
+            ) {
+                Text("Login with email")
+            }
         }
     }
 }
@@ -44,6 +71,7 @@ fun AuthLandingScreen(modifier: Modifier = Modifier, onEmailPasswordClick: () ->
 @Composable
 private fun AuthLandingScreenPreview() {
     AniDexTheme {
-        AuthLandingScreen(onEmailPasswordClick = {})
+        AuthLandingScreen(onEmailPasswordClick = {},
+            onEmailPasswordLogin = {})
     }
 }

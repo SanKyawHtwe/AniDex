@@ -1,7 +1,7 @@
 package com.skhkma.anidex
 
-import com.skhkma.anidex.features.auth.ui.screen.ValidateResult
-import com.skhkma.anidex.features.auth.ui.screen.validatePassword
+import com.skhkma.anidex.features.auth.ui.screen.login.ValidateResult
+import com.skhkma.anidex.features.auth.ui.screen.login.validatePassword
 import kotlin.test.Test
 
 class PasswordValidatorTest {

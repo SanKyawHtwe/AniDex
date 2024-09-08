@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.auth.ui.screen
+package com.skhkma.anidex.features.auth.ui.screen.login
 
 import android.content.res.Configuration
 import android.util.Log
@@ -34,41 +34,35 @@ import androidx.navigation.compose.composable
 import com.example.compose.AniDexTheme
 import com.skhkma.anidex.common.ui.AniDexProgressButton
 import com.skhkma.anidex.common.ui.ErrorDialog
-import com.skhkma.anidex.features.auth.ui.viewmodel.EmailPasswordSignUpViewModel
-import com.skhkma.anidex.features.auth.ui.viewmodel.EmailSignUpUiState
+import com.skhkma.anidex.features.auth.ui.screen.EmailTextField
+import com.skhkma.anidex.features.auth.ui.screen.PasswordTextField
+import com.skhkma.anidex.features.auth.ui.screen.login.viewmodel.EmailPasswordLoginUiState
+import com.skhkma.anidex.features.auth.ui.screen.login.viewmodel.EmailPasswordLoginViewModel
+import com.skhkma.anidex.features.auth.ui.screen.signup.ValidateResult
+import com.skhkma.anidex.features.auth.ui.screen.signup.validatePassword
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-data object EmailPasswordSignUpRoute
+data object EmailPasswordLoginRoute
 
-fun NavController.navigateToEmailPasswordSignUpScreen() {
-    navigate(EmailPasswordSignUpRoute)
+fun NavController.navigateToEmailPasswordLoginScreen() {
+    navigate(EmailPasswordLoginRoute)
 }
 
-fun NavGraphBuilder.emailPasswordSignUpScreen(
+fun NavGraphBuilder.emailPasswordLoginScreen(
     onNavigateToHome: () -> Unit
 ) {
-    composable<EmailPasswordSignUpRoute> {
-        val viewModel: EmailPasswordSignUpViewModel = koinViewModel()
+    composable<EmailPasswordLoginRoute> {
+        val viewModel: EmailPasswordLoginViewModel = koinViewModel()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
         Screen(
             uiState = uiState.value,
-            onSignUpClick = { email, password ->
-                viewModel.createAccount(email, password)
-            },
+            onLoginClick = viewModel::login,
             onErrorDismissClick = {
                 viewModel.setUiStateToIdle()
-            },
-            onVerifyEmailSent = { scope, snackbarHostState ->
-                scope.launch {
-                    snackbarHostState.showSnackbar("Verification email sent")
-                }
-            },
-            onResume = {
-                viewModel.isVerified()
             },
             onNavigateToHome = onNavigateToHome
         )
@@ -78,49 +72,19 @@ fun NavGraphBuilder.emailPasswordSignUpScreen(
 @Composable
 private fun Screen(
     modifier: Modifier = Modifier,
-    uiState: EmailSignUpUiState,
-    onSignUpClick: (String, String) -> Unit,
+    uiState: EmailPasswordLoginUiState,
+    onLoginClick: (String, String) -> Unit,
     onErrorDismissClick: () -> Unit,
-    onNavigateToHome: () -> Unit,
-    onResume: () -> Unit,
-    onVerifyEmailSent: (CoroutineScope, SnackbarHostState) -> Unit
+    onNavigateToHome: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    if (uiState is EmailSignUpUiState.VerificationEmailSent) {
-        onVerifyEmailSent(
-            scope, snackbarHostState
-        )
-    }
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-
-    LaunchedEffect(lifecycleState) {
-        // Do something with your state
-        // You may want to use DisposableEffect or other alternatives
-        // instead of LaunchedEffect
-        when (lifecycleState) {
-            Lifecycle.State.DESTROYED -> {}
-            Lifecycle.State.INITIALIZED -> {}
-            Lifecycle.State.CREATED -> {}
-            Lifecycle.State.STARTED -> {}
-            Lifecycle.State.RESUMED -> {
-                Log.d("Navigated", "Screen: on resume")
-                onResume()
-            }
-        }
-    }
-    if (uiState is EmailSignUpUiState.EmailVerified){
+    if (uiState is EmailPasswordLoginUiState.Success) {
         onNavigateToHome()
     }
 
     Scaffold(
         modifier = modifier,
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { contentPadding ->
+
+        ) { contentPadding ->
         Box(
             modifier = Modifier
                 .padding(contentPadding)
@@ -160,14 +124,14 @@ private fun Screen(
                 )
                 Spacer(modifier = Modifier.size(24.dp))
                 AniDexProgressButton(
-                    text = "Sign Up",
-                    isLoading = uiState is EmailSignUpUiState.Loading,
+                    text = "Login",
+                    isLoading = uiState is EmailPasswordLoginUiState.Loading,
                     isEnable = email.isNotBlank() && password.isNotBlank()
                 ) {
-                    onSignUpClick(email, password)
+                    onLoginClick(email, password)
                 }
             }
-            if (uiState is EmailSignUpUiState.Error) {
+            if (uiState is EmailPasswordLoginUiState.Error) {
                 ErrorDialog(
                     text = uiState.error,
                     onDismissClick = onErrorDismissClick,
@@ -182,50 +146,50 @@ fun isValidEmail(email: String): Boolean {
     return email.matches(Regex(emailRegex))
 }
 
-sealed class ValidateResult {
-    data object Success : ValidateResult()
-    data object MinLengthError : ValidateResult()
-    data object MaxLengthError : ValidateResult()
-    data object SpecialCharError : ValidateResult()
-    data object DigitError : ValidateResult()
-    data object CharError : ValidateResult()
-    data object CapitalCharError : ValidateResult()
-}
-
-const val MINIMUM_PASSWORD_LENGTH = 8
-const val MAXIMUM_PASSWORD_LENGTH = 40
-fun validatePassword(password: String): ValidateResult {
-    if (password.length < MINIMUM_PASSWORD_LENGTH) {
-        return ValidateResult.MinLengthError
-    }
-
-    if (password.length > MAXIMUM_PASSWORD_LENGTH) {
-        return ValidateResult.MaxLengthError
-    }
-
-    val specialCharacterRegex = Regex("[!@#$%^&*(),.?\":{}|<>]")
-    val containsSpecialChar = password.any { specialCharacterRegex.containsMatchIn(it.toString()) }
-    if (!containsSpecialChar) {
-        return ValidateResult.SpecialCharError
-    }
-
-    val containDigits = password.any { it.isDigit() }
-    if (!containDigits) {
-        return ValidateResult.DigitError
-    }
-
-    val containLetters = password.any { it.isLetter() }
-    if (!containLetters) {
-        return ValidateResult.CharError
-    }
-
-    val containCapitalizedLetters = password.any { it.isLetter() && it.isUpperCase() }
-    if (!containCapitalizedLetters) {
-        return ValidateResult.CapitalCharError
-    }
-
-    return ValidateResult.Success
-}
+//sealed class ValidateResult {
+//    data object Success : ValidateResult()
+//    data object MinLengthError : ValidateResult()
+//    data object MaxLengthError : ValidateResult()
+//    data object SpecialCharError : ValidateResult()
+//    data object DigitError : ValidateResult()
+//    data object CharError : ValidateResult()
+//    data object CapitalCharError : ValidateResult()
+//}
+//
+//const val MINIMUM_PASSWORD_LENGTH = 8
+//const val MAXIMUM_PASSWORD_LENGTH = 40
+//fun validatePassword(password: String): ValidateResult {
+//    if (password.length < MINIMUM_PASSWORD_LENGTH) {
+//        return ValidateResult.MinLengthError
+//    }
+//
+//    if (password.length > MAXIMUM_PASSWORD_LENGTH) {
+//        return ValidateResult.MaxLengthError
+//    }
+//
+//    val specialCharacterRegex = Regex("[!@#$%^&*(),.?\":{}|<>]")
+//    val containsSpecialChar = password.any { specialCharacterRegex.containsMatchIn(it.toString()) }
+//    if (!containsSpecialChar) {
+//        return ValidateResult.SpecialCharError
+//    }
+//
+//    val containDigits = password.any { it.isDigit() }
+//    if (!containDigits) {
+//        return ValidateResult.DigitError
+//    }
+//
+//    val containLetters = password.any { it.isLetter() }
+//    if (!containLetters) {
+//        return ValidateResult.CharError
+//    }
+//
+//    val containCapitalizedLetters = password.any { it.isLetter() && it.isUpperCase() }
+//    if (!containCapitalizedLetters) {
+//        return ValidateResult.CapitalCharError
+//    }
+//
+//    return ValidateResult.Success
+//}
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
@@ -233,12 +197,10 @@ fun validatePassword(password: String): ValidateResult {
 private fun ScreenLoadingPreview() {
     AniDexTheme {
         Screen(
-            uiState = EmailSignUpUiState.Loading,
-            onSignUpClick = { _, _ -> },
+            uiState = EmailPasswordLoginUiState.Loading,
+            onLoginClick = { _, _ -> },
             onErrorDismissClick = {},
-            onVerifyEmailSent = { _, _ -> },
-            onNavigateToHome = {},
-            onResume = {}
+            onNavigateToHome = {}
         )
     }
 }
@@ -249,12 +211,10 @@ private fun ScreenLoadingPreview() {
 private fun ScreenErrorPreview() {
     AniDexTheme {
         Screen(
-            uiState = EmailSignUpUiState.Error("Something went wrong!"),
-            onSignUpClick = { _, _ -> },
+            uiState = EmailPasswordLoginUiState.Error("Something went wrong!"),
+            onLoginClick = { _, _ -> },
             onErrorDismissClick = {},
-            onVerifyEmailSent = { _, _ -> },
-            onNavigateToHome = {},
-            onResume = {}
+            onNavigateToHome = {}
         )
     }
 }

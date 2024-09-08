@@ -8,4 +8,6 @@ interface AuthRemoteDataSource {
 
     suspend fun isVerified(): Boolean
 
+    suspend fun loginWithEmailPassword(email: String, password: String) : Result<String>
+
 }
