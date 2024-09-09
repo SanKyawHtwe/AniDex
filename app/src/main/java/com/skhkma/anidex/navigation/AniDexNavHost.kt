@@ -22,7 +22,7 @@ fun AniDexNavHost(
         startDestination = if (isLoggedIn) HomeRoute else AuthNavRoute
     ) {
         onboardingScreen(
-            onNavigateToHome = {
+            onNavigateToAuthLanding = {
                 navController.navigateToHomeScreen()
             }
         )

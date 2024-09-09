@@ -49,12 +49,12 @@ fun Indicator(modifier: Modifier, count: Int, currentIndex: Int) {
                     .clip(CircleShape)
                     .background(color = color.value)
             )
-            Spacer(modifier = Modifier.size(4.dp))
+            Spacer(modifier = Modifier.size(8.dp))
         }
     }
 }
 
-@Preview()
+@Preview(showBackground = true)
 @Composable
 private fun IndicatorPreview() {
     Indicator(modifier = Modifier, count = 3, currentIndex = 1)

@@ -2,6 +2,7 @@
 
 package com.skhkma.anidex.features.onboarding
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,9 +11,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,6 +42,8 @@ import com.skhkma.anidex.features.home.ui.screen.HomeRoute
 import kotlinx.serialization.Serializable
 
 private const val PAGE_COUNT = 3
+private const val WEIGHT_EIGHTY_PERCENT = 0.8f
+private const val WEIGHT_TWENTY_PERCENT = 0.2f
 
 @Serializable
 data object OnboardingRoute
@@ -46,11 +53,11 @@ fun NavController.navigateToOnboardingScreen() {
 }
 
 fun NavGraphBuilder.onboardingScreen(
-    onNavigateToHome: () -> Unit
+    onNavigateToAuthLanding: () -> Unit
 ) {
     composable<OnboardingRoute> {
         OnboardingScreen(
-            onNavigateToHome = onNavigateToHome
+            onNavigateToAuthLanding = onNavigateToAuthLanding
         )
     }
 }
@@ -58,7 +65,7 @@ fun NavGraphBuilder.onboardingScreen(
 @Composable
 fun OnboardingScreen(
     modifier: Modifier = Modifier,
-    onNavigateToHome: () -> Unit
+    onNavigateToAuthLanding: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = {
         PAGE_COUNT
@@ -71,36 +78,35 @@ fun OnboardingScreen(
         ) {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.weight(0.8f),
+                modifier = Modifier.weight(WEIGHT_EIGHTY_PERCENT),
             ) { page ->
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = R.drawable.onboarding_image1
-                        ),
-                        modifier = Modifier
-                            .size(300.dp)
-                            .clip(shape = RoundedCornerShape(18.dp)),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "Onboarding Image",
+                when (page) {
+                    0 -> OnboardingContent(
+                        modifier = Modifier,
+                        imageId = R.drawable.onboarding_first_screen_image,
+                        headerText = stringResource(R.string.onboarding_header_first),
+                        bodyText = stringResource(R.string.onboarding_body_first)
                     )
-                    Text(
-                        text = stringResource(R.string.onboarding_header),
-                        style = MaterialTheme.typography.titleLarge
+
+                    1 -> OnboardingContent(
+                        modifier = Modifier,
+                        imageId = R.drawable.onboarding_second_screen_image,
+                        headerText = stringResource(R.string.onboarding_header_second),
+                        bodyText = stringResource(R.string.onboarding_body_second)
                     )
-                    Text(
-                        text = stringResource(R.string.onboarding_body),
-                        style = MaterialTheme.typography.bodyLarge
+
+                    2 -> OnboardingContent(
+                        modifier = Modifier,
+                        imageId = R.drawable.onboarding_third_screen_image,
+                        headerText = stringResource(R.string.onboarding_header_third),
+                        bodyText = stringResource(R.string.onboarding_body_third)
                     )
+
                 }
             }
 
             Indicator(
-                modifier = Modifier.weight(0.2f),
+                modifier = Modifier.weight(WEIGHT_TWENTY_PERCENT),
                 count = PAGE_COUNT,
                 currentIndex = pagerState.currentPage
             )
@@ -114,7 +120,7 @@ fun OnboardingScreen(
             visible = pagerState.currentPage == PAGE_COUNT - 1
         ) {
             Button(onClick = {
-                onNavigateToHome()
+                onNavigateToAuthLanding()
             }) {
                 Text(text = "Get Started")
             }
@@ -122,12 +128,60 @@ fun OnboardingScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+fun OnboardingContent(
+    modifier: Modifier = Modifier,
+    imageId: Int,
+    headerText: String,
+    bodyText: String
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(
+                id = imageId
+            ),
+            modifier = Modifier
+                .size(300.dp),
+            contentScale = ContentScale.Fit,
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Text(
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            textAlign = TextAlign.Center,
+            text = headerText,
+            style = MaterialTheme.typography.titleLarge,
+            maxLines = 1,
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Text(
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            textAlign = TextAlign.Center,
+            text = bodyText,
+            maxLines = 3,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Preview(showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
 private fun OnboardingScreenPreview() {
     AniDexTheme {
         OnboardingScreen(
-            onNavigateToHome = {}
+            onNavigateToAuthLanding = {}
         )
     }
 }
