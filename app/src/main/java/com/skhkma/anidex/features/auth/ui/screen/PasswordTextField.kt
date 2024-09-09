@@ -31,6 +31,7 @@ fun PasswordTextField(
         value = password,
         onValueChange = onPasswordChange,
         isError = isError,
+        maxLines = 1,
         supportingText = {
             if (isError) Text(getErrorMessage(validateResult))
         },

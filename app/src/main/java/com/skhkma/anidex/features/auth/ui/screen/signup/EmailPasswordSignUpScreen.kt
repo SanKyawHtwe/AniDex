@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
@@ -141,6 +142,8 @@ private fun Screen(
                 var isPasswordShown by rememberSaveable { mutableStateOf(false) }
 
                 EmailTextField(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 40.dp),
                     email = email,
                     isError = isEmailError,
                     onEmailChange = {
@@ -152,6 +155,8 @@ private fun Screen(
                 )
                 Spacer(modifier = Modifier.size(24.dp))
                 PasswordTextField(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 40.dp),
                     password = password,
                     isVisible = isPasswordShown,
                     isError = isPasswordError,

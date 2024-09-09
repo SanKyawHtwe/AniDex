@@ -21,6 +21,7 @@ fun EmailTextField(
         value = email,
         onValueChange = onEmailChange,
         isError = isError,
+        maxLines = 1,
         supportingText = {
             if (isError) Text("Invalid email address")
         },
