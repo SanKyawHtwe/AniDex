@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.home.domain.model
+package com.skhkma.anidex.network.domain.model
 
 data class AnimeModel(
     val id : String,

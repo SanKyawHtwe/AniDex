@@ -42,8 +42,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
 import com.skhkma.anidex.R
-import com.skhkma.anidex.features.home.data.model.Anime
-import com.skhkma.anidex.features.home.domain.model.AnimeModel
+import com.skhkma.anidex.network.domain.model.AnimeModel
 import com.skhkma.anidex.features.home.ui.viewmodel.TrendingAnimeUiState
 import org.koin.androidx.compose.koinViewModel
 

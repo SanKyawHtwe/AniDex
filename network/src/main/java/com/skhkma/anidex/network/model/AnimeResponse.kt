@@ -1,34 +1,34 @@
-package com.skhkma.anidex.features.home.data.model
+package com.skhkma.anidex.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AnimeResponse(
+internal data class AnimeResponse(
     val data : List<Anime>
 )
 
 @Serializable
-data class Anime(
+internal data class Anime(
     val id : String,
     val type : String?,
     val attributes : Attributes?
 )
 
 @Serializable
-data class Attributes(
+internal data class Attributes(
     val titles : Map<String,String>?,
     val posterImage : PosterImage?
 )
 
 @Serializable
-data class PosterImage(
+internal data class PosterImage(
     val small : String?,
 )
 
 
 @Serializable
-data class Title(
+internal data class Title(
     @SerialName("en")
     val english : String?,
     @SerialName("en_jp")

@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "AniDex"
 include(":app")
+include(":network")

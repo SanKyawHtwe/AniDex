@@ -1,7 +1,7 @@
-package com.skhkma.anidex.features.home.data.repository
+package com.skhkma.anidex.network.datasource
 
 import com.skhkma.anidex.network.domain.model.AnimeModel
 
-interface AnimeRepository {
+interface AnimeRemoteDatasource {
     suspend fun getAnimeList() : Result<List<AnimeModel>>
 }

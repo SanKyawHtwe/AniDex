@@ -1,13 +1,13 @@
-package com.skhkma.anidex.features.home.data.datasource
+package com.skhkma.anidex.network.datasource
 
-import com.skhkma.anidex.features.home.data.mapper.AnimeMapper
-import com.skhkma.anidex.features.home.data.model.AnimeResponse
-import com.skhkma.anidex.features.home.data.utils.handle
-import com.skhkma.anidex.features.home.domain.model.AnimeModel
+import com.skhkma.anidex.network.domain.model.AnimeModel
+import com.skhkma.anidex.network.mapper.AnimeMapper
+import com.skhkma.anidex.network.model.AnimeResponse
+import com.skhkma.anidex.network.utils.handle
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 
-class AnimeRemoteDataSourceImpl(
+internal class AnimeRemoteDataSourceImpl(
     private val httpClient: HttpClient
 ) : AnimeRemoteDatasource {
     override suspend fun getAnimeList(): Result<List<AnimeModel>> {

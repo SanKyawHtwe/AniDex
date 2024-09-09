@@ -1,7 +1,7 @@
-package com.skhkma.anidex.features.home.data.mapper
+package com.skhkma.anidex.network.mapper
 
-import com.skhkma.anidex.features.home.data.model.AnimeResponse
-import com.skhkma.anidex.features.home.domain.model.AnimeModel
+import com.skhkma.anidex.network.model.AnimeResponse
+import com.skhkma.anidex.network.domain.model.AnimeModel
 
 internal object AnimeMapper {
     fun toDomain(animeResponse: AnimeResponse): List<AnimeModel> {

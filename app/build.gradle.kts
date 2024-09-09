@@ -75,16 +75,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
-    implementation(libs.bundles.ktor.bundle)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation (libs.koin.androidx.compose)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(project(":network"))
 
     //Test
-
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

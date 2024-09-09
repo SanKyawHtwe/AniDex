@@ -1,11 +1,10 @@
-package com.skhkma.anidex.features.home.data.utils
+package com.skhkma.anidex.network.utils
 
-import com.google.android.gms.common.api.ApiException
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 
-suspend inline fun <reified T> handle(
+internal suspend inline fun <reified T> handle(
     crossinline apiCall: suspend () -> HttpResponse
 ): Result<T> {
     return try {

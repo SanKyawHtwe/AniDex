@@ -1,6 +1,6 @@
-package com.skhkma.anidex.common.di
+package com.skhkma.anidex.network.di
 
-import com.skhkma.anidex.features.home.data.service.KtorUtils
+import com.skhkma.anidex.network.KtorUtils
 import org.koin.dsl.module
 
 val networkModule = module {

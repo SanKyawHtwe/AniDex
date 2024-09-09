@@ -3,7 +3,7 @@ package com.skhkma.anidex.features.home.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skhkma.anidex.features.home.data.repository.AnimeRepository
-import com.skhkma.anidex.features.home.domain.model.AnimeModel
+import com.skhkma.anidex.network.domain.model.AnimeModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

@@ -1,3 +1,3 @@
-package com.skhkma.anidex.features.home.data.utils
+package com.skhkma.anidex.network.utils
 
 class ApiException(message: String, val code: Int): Exception(message)
