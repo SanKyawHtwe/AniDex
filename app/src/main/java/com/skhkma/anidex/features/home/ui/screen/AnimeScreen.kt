@@ -50,7 +50,7 @@ import org.koin.androidx.compose.koinViewModel
 data object AnimeRoute
 
 fun NavGraphBuilder.animeScreen() {
-    composable<AnimeRoute> {
+    composable(route = Screen.Anime.route) {
         val viewModel: AnimeViewModel = koinViewModel()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
         AnimeScreen(

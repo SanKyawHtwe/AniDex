@@ -17,13 +17,13 @@ import kotlinx.serialization.Serializable
 data object ProfileRoute
 
 fun NavController.navigateToProfileScreen() {
-    navigate(ProfileRoute)
+    navigate(Screen.Profile.route)
 }
 
 fun NavGraphBuilder.profileScreen(
     onNavigateToAuthLanding : () -> Unit
 ) {
-    composable<ProfileRoute> {
+    composable(route = Screen.Profile.route){
         ProfileScreen(
             onNavigateToAuthLanding = onNavigateToAuthLanding
         )
