@@ -1,6 +1,5 @@
 package com.skhkma.anidex.features.home.ui.screen
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -21,24 +20,22 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AniDexTheme
-import com.skhkma.anidex.R
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -48,13 +45,6 @@ fun NavController.navigateToHomeScreen(
     navOptions: NavOptions? = null
 ) {
     navigate(HomeRoute, navOptions = navOptions)
-}
-
-sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Anime : Screen("anime", R.string.anime)
-    object Manga : Screen("manga", R.string.manga)
-    object Watchlist : Screen("watchlist", R.string.watchlist)
-    object Profile : Screen("profile", R.string.profile)
 }
 
 fun NavGraphBuilder.homeScreen(
@@ -69,73 +59,57 @@ fun NavGraphBuilder.homeScreen(
     }
 }
 
+private data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
+
+private val topLevelRoutes = listOf(
+    TopLevelRoute("Anime", AnimeRoute, Icons.Filled.Home),
+    TopLevelRoute("Manga", MangaRoute, Icons.Filled.Face),
+    TopLevelRoute("Watchlist", WatchlistRoute, Icons.Filled.Favorite),
+    TopLevelRoute("Profile", ProfileRoute, Icons.Filled.Person)
+)
+
 @Composable
-fun HomeScreen(
+private fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToManga: () -> Unit,
     onNavigateToAuthLanding: () -> Unit
 ) {
-
-
-    val items = listOf(
-        Screen.Anime,
-        Screen.Manga,
-        Screen.Watchlist,
-        Screen.Profile
-    )
-
-    val icons = listOf(
-        Icons.Filled.Home,
-        Icons.Filled.Face,
-        Icons.Filled.Favorite,
-        Icons.Filled.Person
-    )
     val navController = rememberNavController()
-    var selectedScreen by remember { mutableStateOf<Screen>(Screen.Anime) }
-    LaunchedEffect(navController) {
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            selectedScreen = when (destination.route) {
-                Screen.Anime.route -> Screen.Anime
-                Screen.Manga.route -> Screen.Manga
-                Screen.Watchlist.route -> Screen.Watchlist
-                Screen.Profile.route -> Screen.Profile
-                else -> Screen.Anime
-            }
-        }
-    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-
             NavigationBar {
-
-
-                items.forEachIndexed { index, screen ->
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                topLevelRoutes.forEach { topLevelRoute ->
                     NavigationBarItem(
-                        icon = { Icon(icons[index], contentDescription = null) },
-                        label = { Text(stringResource(screen.resourceId)) },
+                        icon = {
+                            Icon(
+                                topLevelRoute.icon,
+                                contentDescription = topLevelRoute.name
+                            )
+                        },
+                        label = { Text(topLevelRoute.name) },
+                        selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.primary,
                             unselectedIconColor = Color.Gray,
                             selectedTextColor = MaterialTheme.colorScheme.primary,
                             unselectedTextColor = Color.Gray
                         ),
-                        selected = selectedScreen == screen,
                         onClick = {
-                            selectedScreen = screen
-                            navController.navigate(
-                                when (index) {
-                                    0 -> Screen.Anime
-                                    1 -> Screen.Manga
-                                    2 -> Screen.Watchlist
-                                    3 -> Screen.Profile
-                                    else -> Screen.Anime
-                                }.route
-                            ) {
-                                popUpTo(navController.graph.startDestinationId) {
+                            navController.navigate(topLevelRoute.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
                                 launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
                         }
@@ -144,12 +118,10 @@ fun HomeScreen(
             }
         }
     ) {
-
-
         NavHost(
             modifier = Modifier.padding(it),
             navController = navController,
-            startDestination = Screen.Anime.route,
+            startDestination = topLevelRoutes.first().route,
             enterTransition = {
                 slideInVertically(
                     animationSpec = tween(500),
@@ -185,10 +157,10 @@ fun HomeScreen(
 
             ) {
             animeScreen()
-            composable(route = Screen.Manga.route) {
+            composable<MangaRoute> {
                 MangaScreen()
             }
-            composable(route = Screen.Watchlist.route) {
+            composable<WatchlistRoute> {
                 WatchlistScreen()
             }
             profileScreen(onNavigateToAuthLanding = onNavigateToAuthLanding)
@@ -199,7 +171,7 @@ fun HomeScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+private fun HomeScreenPreview() {
     AniDexTheme {
         HomeScreen(
             onNavigateToManga = {},

@@ -1,6 +1,5 @@
 package com.skhkma.anidex.features.home.ui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -26,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -34,23 +31,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.compose.AniDexTheme
-import com.skhkma.anidex.features.home.ui.viewmodel.AnimeViewModel
-import kotlinx.serialization.Serializable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
+import com.example.compose.AniDexTheme
 import com.skhkma.anidex.R
-import com.skhkma.anidex.network.domain.model.AnimeModel
+import com.skhkma.anidex.features.home.ui.viewmodel.AnimeViewModel
 import com.skhkma.anidex.features.home.ui.viewmodel.TrendingAnimeUiState
+import com.skhkma.anidex.network.domain.model.AnimeModel
+import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
 data object AnimeRoute
 
 fun NavGraphBuilder.animeScreen() {
-    composable(route = Screen.Anime.route) {
+    composable<AnimeRoute> {
         val viewModel: AnimeViewModel = koinViewModel()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
         AnimeScreen(
