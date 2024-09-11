@@ -6,17 +6,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object WatchlistRoute
 
+fun NavGraphBuilder.watchlistScreen() {
+    composable<WatchlistRoute> {
+        WatchlistScreen()
+    }
+}
+
 @Composable
-fun WatchlistScreen(
+private fun WatchlistScreen(
     modifier: Modifier = Modifier
 ){
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .background(Color.Red)
     )
 }
