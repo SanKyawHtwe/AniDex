@@ -22,3 +22,5 @@ dependencyResolutionManagement {
 rootProject.name = "AniDex"
 include(":app")
 include(":network")
+include(":feature:anime")
+include(":core:designsystem")

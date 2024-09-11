@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.compose.AniDexTheme
+import com.skhkma.anidex.designsystem.theme.AniDexTheme
 
 @Composable
 fun EmailTextField(

@@ -35,7 +35,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.compose.AniDexTheme
+import com.skhkma.anidex.anime.AnimeRoute
+import com.skhkma.anidex.anime.animeScreen
+import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.compose.AniDexTheme
+import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -32,7 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.compose.AniDexTheme
+import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.common.ui.AniDexProgressButton
 import com.skhkma.anidex.common.ui.ErrorDialog
 import com.skhkma.anidex.features.auth.ui.screen.EmailTextField
