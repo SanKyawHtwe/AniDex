@@ -21,9 +21,9 @@ fun NavController.navigateToProfileScreen() {
 }
 
 fun NavGraphBuilder.profileScreen(
-    onNavigateToAuthLanding : () -> Unit
+    onNavigateToAuthLanding: () -> Unit
 ) {
-    composable<ProfileRoute>{
+    composable<ProfileRoute> {
         ProfileScreen(
             onNavigateToAuthLanding = onNavigateToAuthLanding
         )
@@ -31,10 +31,10 @@ fun NavGraphBuilder.profileScreen(
 }
 
 @Composable
-fun ProfileScreen(
+private fun ProfileScreen(
     modifier: Modifier = Modifier,
     onNavigateToAuthLanding: () -> Unit
-){
+) {
     Button(
         modifier = modifier,
         onClick = {
@@ -55,5 +55,4 @@ private fun ProfileScreenPreview() {
             onNavigateToAuthLanding = {}
         )
     }
-    
 }

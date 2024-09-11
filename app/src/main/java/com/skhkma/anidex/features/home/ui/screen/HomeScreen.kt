@@ -157,12 +157,8 @@ private fun HomeScreen(
 
             ) {
             animeScreen()
-            composable<MangaRoute> {
-                MangaScreen()
-            }
-            composable<WatchlistRoute> {
-                WatchlistScreen()
-            }
+            mangaScreen()
+            watchlistScreen()
             profileScreen(onNavigateToAuthLanding = onNavigateToAuthLanding)
         }
     }
