@@ -39,7 +39,7 @@ internal class AnimeViewModel(
 }
 
 
-internal sealed class TrendingAnimeUiState {
+sealed class TrendingAnimeUiState {
     data object Loading : TrendingAnimeUiState()
     data class Success(var animeList: List<AnimeModel>) : TrendingAnimeUiState()
     data class Error (var message : String) : TrendingAnimeUiState()

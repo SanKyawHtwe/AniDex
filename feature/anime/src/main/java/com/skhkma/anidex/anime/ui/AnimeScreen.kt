@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
@@ -142,10 +143,13 @@ fun Anime(
                     modifier = Modifier
                         .size(24.dp)
                         .background(MaterialTheme.colorScheme.errorContainer),
-                    painter = painterResource(id = if(isIconClicked){R.drawable.ic_watchlist_added}
-                    else{
-                        R.drawable.ic_add_to_watchlist
-                    }),
+                    painter = painterResource(
+                        id = if (isIconClicked) {
+                            R.drawable.ic_watchlist_added
+                        } else {
+                            R.drawable.ic_add_to_watchlist
+                        }
+                    ),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -204,41 +208,13 @@ fun AnimePreview() {
 
 @Preview(apiLevel = 34, showSystemUi = true, showBackground = true, fontScale = 1.0f)
 @Composable
-fun AnimeScreenLoadingPreview() {
+fun AnimeScreenSuccessPreview(
+    @PreviewParameter(AnimeUiStatePreviewParameterProvider::class) uiState: TrendingAnimeUiState
+) {
     AniDexTheme {
         AnimeScreen(
-            uiState = TrendingAnimeUiState.Loading,
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(apiLevel = 34, showSystemUi = true, showBackground = true, fontScale = 1.0f)
-@Composable
-fun AnimeScreenSuccessPreview() {
-    AniDexTheme {
-        AnimeScreen(
-            uiState = TrendingAnimeUiState.Success(
-                listOf(
-                    AnimeModel(
-                        id = "69",
-                        image = "",
-                        title = "Taw thar"
-                    )
-                )
-            ),
+            uiState = uiState,
             onRetry = { }
-        )
-    }
-}
-
-@Preview(apiLevel = 34, showSystemUi = true, showBackground = true, fontScale = 1.0f)
-@Composable
-fun AnimeScreenErrorPreview() {
-    AniDexTheme {
-        AnimeScreen(
-            uiState = TrendingAnimeUiState.Error("Something went wrong"),
-            onRetry = {}
         )
     }
 }
