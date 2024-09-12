@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.auth.data.datasource
+package com.skhkma.anidex.network.datasource
 
 interface AuthRemoteDataSource {
 
@@ -9,5 +9,7 @@ interface AuthRemoteDataSource {
     suspend fun isVerified(): Boolean
 
     suspend fun loginWithEmailPassword(email: String, password: String) : Result<String>
+
+    suspend fun logout()
 
 }

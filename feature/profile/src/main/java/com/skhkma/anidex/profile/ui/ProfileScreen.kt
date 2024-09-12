@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.home.ui.screen
+package com.skhkma.anidex.profile.ui
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -9,15 +9,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object ProfileRoute
 
 fun NavController.navigateToProfileScreen() {
-    navigate(ProfileRoute)
+    navigate(com.skhkma.anidex.profile.ui.ProfileRoute)
 }
 
 fun NavGraphBuilder.profileScreen(
@@ -38,7 +36,7 @@ private fun ProfileScreen(
     Button(
         modifier = modifier,
         onClick = {
-            Firebase.auth.signOut()
+
             onNavigateToAuthLanding()
         }
     ) {

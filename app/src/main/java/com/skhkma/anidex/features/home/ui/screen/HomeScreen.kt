@@ -38,6 +38,8 @@ import androidx.navigation.compose.rememberNavController
 import com.skhkma.anidex.anime.ui.AnimeRoute
 import com.skhkma.anidex.anime.ui.animeScreen
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
+import com.skhkma.anidex.profile.ui.ProfileRoute
+import com.skhkma.anidex.profile.ui.profileScreen
 import kotlinx.serialization.Serializable
 
 @Serializable

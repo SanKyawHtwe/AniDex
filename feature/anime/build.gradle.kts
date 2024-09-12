@@ -52,7 +52,6 @@ dependencies {
     implementation(project(":core:designsystem"))
 
     testImplementation(libs.junit)
-
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

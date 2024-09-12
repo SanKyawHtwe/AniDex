@@ -2,10 +2,11 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.plugin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.skhkma.anidex.network"
+    namespace = "com.skhkma.anidex.profile"
     compileSdk = 34
 
     defaultConfig {
@@ -31,25 +32,26 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
-
-    implementation(project(":core:model"))
-
-    implementation(libs.bundles.ktor.bundle)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.coil.compose)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation (libs.koin.androidx.compose)
-
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics)
-    implementation(libs.firebase.perf)
-    implementation(libs.firebase.auth)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    api(project(":core:data"))
+    implementation(project(":core:model"))
+    implementation(project(":core:designsystem"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
 }

@@ -1,8 +1,11 @@
-package com.skhkma.anidex.features.auth.data.repository
+package com.skhkma.anidex.data.repository
 
-import com.skhkma.anidex.features.auth.data.datasource.AuthRemoteDataSource
+import com.skhkma.anidex.network.datasource.AuthRemoteDataSource
 
-class AuthRepositoryImpl(private val authRemoteDataSource: AuthRemoteDataSource) : AuthRepository {
+
+internal class AuthRepositoryImpl(
+    private val authRemoteDataSource: AuthRemoteDataSource
+) : AuthRepository {
 
     override suspend fun signUpWithEmailPassword(email: String, password: String): Result<String> {
         return authRemoteDataSource.signUpWithEmailPassword(email, password)
@@ -13,7 +16,7 @@ class AuthRepositoryImpl(private val authRemoteDataSource: AuthRemoteDataSource)
     }
 
     override suspend fun isVerified(): Boolean {
-         return authRemoteDataSource.isVerified()
+        return authRemoteDataSource.isVerified()
     }
 
     override suspend fun loginWithEmailPassword(email: String, password: String): Result<String> {
@@ -21,5 +24,9 @@ class AuthRepositoryImpl(private val authRemoteDataSource: AuthRemoteDataSource)
             email = email,
             password = password
         )
+    }
+
+    override suspend fun logout() {
+        authRemoteDataSource.logout()
     }
 }

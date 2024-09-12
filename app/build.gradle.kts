@@ -68,19 +68,22 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.perf)
+
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation (libs.koin.androidx.compose)
-    implementation(libs.firebase.auth)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(project(":feature:anime"))
+    implementation(project(":feature:profile"))
     implementation(project(":core:designsystem"))
 
     //Test

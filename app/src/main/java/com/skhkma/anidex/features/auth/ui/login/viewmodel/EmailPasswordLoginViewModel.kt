@@ -2,7 +2,7 @@ package com.skhkma.anidex.features.auth.ui.login.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skhkma.anidex.features.auth.data.repository.AuthRepository
+import com.skhkma.anidex.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

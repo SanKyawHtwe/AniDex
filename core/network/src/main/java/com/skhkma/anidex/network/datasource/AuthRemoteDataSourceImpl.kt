@@ -1,10 +1,10 @@
-package com.skhkma.anidex.features.auth.data.datasource
+package com.skhkma.anidex.network.datasource
 
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
-class AuthRemoteDataSourceImpl : AuthRemoteDataSource {
+internal class AuthRemoteDataSourceImpl : AuthRemoteDataSource {
 
     override suspend fun signUpWithEmailPassword(email: String, password: String): Result<String> {
         return try {
@@ -56,6 +56,10 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSource {
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override suspend fun logout() {
+        Firebase.auth.signOut()
     }
 
 
