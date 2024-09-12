@@ -4,8 +4,8 @@ import com.skhkma.anidex.features.auth.data.datasource.AuthRemoteDataSource
 import com.skhkma.anidex.features.auth.data.datasource.AuthRemoteDataSourceImpl
 import com.skhkma.anidex.features.auth.data.repository.AuthRepository
 import com.skhkma.anidex.features.auth.data.repository.AuthRepositoryImpl
-import com.skhkma.anidex.features.auth.ui.screen.login.viewmodel.EmailPasswordLoginViewModel
-import com.skhkma.anidex.features.auth.ui.screen.signup.viewmodel.EmailPasswordSignUpViewModel
+import com.skhkma.anidex.features.auth.ui.login.viewmodel.EmailPasswordLoginViewModel
+import com.skhkma.anidex.features.auth.ui.signup.viewmodel.EmailPasswordSignUpViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

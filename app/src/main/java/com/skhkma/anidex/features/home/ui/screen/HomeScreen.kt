@@ -35,8 +35,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.skhkma.anidex.anime.AnimeRoute
-import com.skhkma.anidex.anime.animeScreen
+import com.skhkma.anidex.anime.ui.AnimeRoute
+import com.skhkma.anidex.anime.ui.animeScreen
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import kotlinx.serialization.Serializable
 
@@ -93,7 +93,8 @@ private fun HomeScreen(
                             )
                         },
                         label = { Text(topLevelRoute.name) },
-                        selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
+                        selected = currentDestination?.hierarchy?.any {
+                            it.hasRoute(topLevelRoute.route::class) } == true,
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.primary,
                             unselectedIconColor = Color.Gray,

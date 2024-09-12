@@ -9,10 +9,10 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navOptions
 
 import authLandingScreen
-import com.skhkma.anidex.features.auth.ui.screen.login.emailPasswordLoginScreen
-import com.skhkma.anidex.features.auth.ui.screen.login.navigateToEmailPasswordLoginScreen
-import com.skhkma.anidex.features.auth.ui.screen.signup.emailPasswordSignUpScreen
-import com.skhkma.anidex.features.auth.ui.screen.signup.navigateToEmailPasswordSignUpScreen
+import com.skhkma.anidex.features.auth.ui.login.screen.emailPasswordLoginScreen
+import com.skhkma.anidex.features.auth.ui.login.screen.navigateToEmailPasswordLoginScreen
+import com.skhkma.anidex.features.auth.ui.signup.screen.emailPasswordSignUpScreen
+import com.skhkma.anidex.features.auth.ui.signup.screen.navigateToEmailPasswordSignUpScreen
 import com.skhkma.anidex.features.home.ui.screen.navigateToHomeScreen
 import kotlinx.serialization.Serializable
 

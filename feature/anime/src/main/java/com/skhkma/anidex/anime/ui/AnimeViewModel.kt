@@ -1,4 +1,4 @@
-package com.skhkma.anidex.anime
+package com.skhkma.anidex.anime.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

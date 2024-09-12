@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.auth.ui.screen.signup.viewmodel
+package com.skhkma.anidex.features.auth.ui.signup.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

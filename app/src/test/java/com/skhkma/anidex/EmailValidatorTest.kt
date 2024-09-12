@@ -1,6 +1,6 @@
 package com.skhkma.anidex
 
-import com.skhkma.anidex.features.auth.ui.screen.login.isValidEmail
+import com.skhkma.anidex.features.auth.ui.login.screen.isValidEmail
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test

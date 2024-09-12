@@ -1,6 +1,6 @@
 package com.skhkma.anidex.anime.di
 
-import com.skhkma.anidex.anime.AnimeViewModel
+import com.skhkma.anidex.anime.ui.AnimeViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

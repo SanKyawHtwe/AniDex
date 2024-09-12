@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.auth.ui.screen.login.viewmodel
+package com.skhkma.anidex.features.auth.ui.login.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,7 +30,8 @@ class EmailPasswordLoginViewModel(private val authRepository: AuthRepository) : 
 
                 },
                 {
-                    _uiState.value = EmailPasswordLoginUiState.Error(it.message ?: "Something went wrong!")
+                    _uiState.value =
+                        EmailPasswordLoginUiState.Error(it.message ?: "Something went wrong!")
                 }
             )
         }

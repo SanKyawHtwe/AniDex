@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.auth.ui.screen.login
+package com.skhkma.anidex.features.auth.ui.login.screen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +28,10 @@ import com.skhkma.anidex.common.ui.AniDexProgressButton
 import com.skhkma.anidex.common.ui.ErrorDialog
 import com.skhkma.anidex.features.auth.ui.screen.EmailTextField
 import com.skhkma.anidex.features.auth.ui.screen.PasswordTextField
-import com.skhkma.anidex.features.auth.ui.screen.login.viewmodel.EmailPasswordLoginUiState
-import com.skhkma.anidex.features.auth.ui.screen.login.viewmodel.EmailPasswordLoginViewModel
-import com.skhkma.anidex.features.auth.ui.screen.signup.ValidateResult
-import com.skhkma.anidex.features.auth.ui.screen.signup.validatePassword
+import com.skhkma.anidex.features.auth.ui.login.viewmodel.EmailPasswordLoginUiState
+import com.skhkma.anidex.features.auth.ui.login.viewmodel.EmailPasswordLoginViewModel
+import com.skhkma.anidex.features.auth.ui.signup.screen.ValidateResult
+import com.skhkma.anidex.features.auth.ui.signup.screen.validatePassword
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 

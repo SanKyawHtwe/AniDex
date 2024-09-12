@@ -1,4 +1,4 @@
-package com.skhkma.anidex.anime
+package com.skhkma.anidex.anime.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

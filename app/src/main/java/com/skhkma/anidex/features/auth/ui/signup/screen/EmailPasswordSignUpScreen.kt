@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.auth.ui.screen.signup
+package com.skhkma.anidex.features.auth.ui.signup.screen
 
 import android.content.res.Configuration
 import android.util.Log
@@ -37,8 +37,8 @@ import com.skhkma.anidex.common.ui.AniDexProgressButton
 import com.skhkma.anidex.common.ui.ErrorDialog
 import com.skhkma.anidex.features.auth.ui.screen.EmailTextField
 import com.skhkma.anidex.features.auth.ui.screen.PasswordTextField
-import com.skhkma.anidex.features.auth.ui.screen.signup.viewmodel.EmailPasswordSignUpViewModel
-import com.skhkma.anidex.features.auth.ui.screen.signup.viewmodel.EmailSignUpUiState
+import com.skhkma.anidex.features.auth.ui.signup.viewmodel.EmailPasswordSignUpViewModel
+import com.skhkma.anidex.features.auth.ui.signup.viewmodel.EmailSignUpUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -148,7 +148,7 @@ private fun Screen(
                     isError = isEmailError,
                     onEmailChange = {
                         email = it
-                        isEmailError = !com.skhkma.anidex.features.auth.ui.screen.login.isValidEmail(
+                        isEmailError = !com.skhkma.anidex.features.auth.ui.login.screen.isValidEmail(
                             it
                         )
                     }
