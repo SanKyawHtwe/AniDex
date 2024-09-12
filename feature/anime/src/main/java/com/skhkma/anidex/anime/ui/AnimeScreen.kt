@@ -34,7 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
-import com.skhkma.anidex.network.domain.model.AnimeModel
+import com.skhkma.anidex.model.AnimeModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import com.skhkma.anidex.designsystem.R

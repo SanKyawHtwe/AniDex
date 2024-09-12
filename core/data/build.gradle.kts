@@ -1,12 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.plugin.serialization)
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.skhkma.anidex.anime"
+    namespace = "com.skhkma.anidex.data"
     compileSdk = 34
 
     defaultConfig {
@@ -32,27 +30,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.coil.compose)
+
+    implementation(project(":core:model"))
+    api(project(":core:network"))
+
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation (libs.koin.androidx.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    api(project(":core:data"))
-    implementation(project(":core:model"))
-    implementation(project(":core:designsystem"))
 
     testImplementation(libs.junit)
-
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

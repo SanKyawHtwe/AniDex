@@ -80,7 +80,6 @@ dependencies {
     implementation (libs.koin.androidx.compose)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(project(":network"))
     implementation(project(":feature:anime"))
     implementation(project(":core:designsystem"))
 

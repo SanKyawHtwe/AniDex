@@ -2,8 +2,8 @@ package com.skhkma.anidex.anime.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skhkma.anidex.anime.repository.AnimeRepository
-import com.skhkma.anidex.network.domain.model.AnimeModel
+import com.skhkma.anidex.data.repository.AnimeRepository
+import com.skhkma.anidex.model.AnimeModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
