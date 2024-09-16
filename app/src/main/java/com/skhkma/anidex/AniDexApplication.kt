@@ -5,7 +5,10 @@ import com.skhkma.anidex.network.di.networkModule
 import com.skhkma.anidex.features.auth.data.di.authModule
 import com.skhkma.anidex.data.di.animeRepositoryModule
 import com.skhkma.anidex.anime.di.animeViewModelModule
+import com.skhkma.anidex.data.di.authRepositoryModule
 import com.skhkma.anidex.network.di.animeDataSourceModule
+import com.skhkma.anidex.network.di.authDataSourceModule
+import com.skhkma.anidex.profile.di.profileViewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -18,7 +21,10 @@ class AniDexApplication : Application() {
                 animeDataSourceModule,
                 animeRepositoryModule,
                 animeViewModelModule,
-                authModule
+                authModule,
+                authDataSourceModule,
+                authRepositoryModule,
+                profileViewModelModule
             )
             androidContext(androidContext = this@AniDexApplication)
         }

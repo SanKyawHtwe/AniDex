@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.auth.data.repository
+package com.skhkma.anidex.data.repository
 
 interface AuthRepository {
 
@@ -9,4 +9,6 @@ interface AuthRepository {
     suspend fun isVerified(): Boolean
 
     suspend fun loginWithEmailPassword(email: String, password: String): Result<String>
+
+    suspend fun logout()
 }

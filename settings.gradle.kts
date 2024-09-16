@@ -28,4 +28,4 @@ include(":core:model")
 include(":core:network")
 
 include(":feature:anime")
-
+include(":feature:profile")
