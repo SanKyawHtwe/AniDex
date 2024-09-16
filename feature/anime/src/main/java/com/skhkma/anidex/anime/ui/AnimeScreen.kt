@@ -64,7 +64,7 @@ private fun AnimeScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        Text(text = "Anime")
+        Text(text = "Popular Anime")
 
         Box(
             modifier = Modifier

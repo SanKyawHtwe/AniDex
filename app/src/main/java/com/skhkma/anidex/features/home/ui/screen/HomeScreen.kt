@@ -49,6 +49,7 @@ import com.skhkma.anidex.anime.ui.animeScreen
 import com.skhkma.anidex.designsystem.R
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.profile.ui.ProfileRoute
+import com.skhkma.anidex.profile.ui.ProfileTopAppBar
 import com.skhkma.anidex.profile.ui.profileScreen
 import kotlinx.serialization.Serializable
 
@@ -90,29 +91,19 @@ private fun HomeScreen(
     onNavigateToAuthLanding: () -> Unit
 ) {
     val navController = rememberNavController()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     Scaffold(
-        modifier = modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-           if( currentDestination?.hierarchy?.any {
-                   it.hasRoute(topLevelRoutes.last().route::class) } == true){
-               CenterAlignedTopAppBar(
-                   modifier = Modifier,
-                   title = {
-                       Image(
-                           modifier = Modifier.fillMaxWidth(),
-                           painter = painterResource(R.drawable.place_holder_image),
-                           contentDescription = null,
-                           contentScale = ContentScale.FillWidth
-                       )
-                   },
-                   scrollBehavior = scrollBehavior
-               )
-           }
-        },
+        modifier = modifier,
+//        topBar = {
+//           if( currentDestination?.hierarchy?.any {
+//                   it.hasRoute(topLevelRoutes.last().route::class) } == true){
+//               ProfileTopAppBar(
+//                   modifier = Modifier,
+//                   scrollBehavior = scrollBehavior
+//               )
+//           }
+//        },
         bottomBar = {
             NavigationBar {
 
@@ -189,7 +180,6 @@ private fun HomeScreen(
                     }
                 ) + fadeOut()
             },
-
             ) {
             animeScreen()
             mangaScreen()

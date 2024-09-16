@@ -1,34 +1,37 @@
 package com.skhkma.anidex.profile.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.skhkma.anidex.designsystem.R
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import kotlinx.serialization.Serializable
-import com.skhkma.anidex.designsystem.R as designR
+
 
 @Serializable
 data object ProfileRoute
@@ -47,62 +50,74 @@ fun NavGraphBuilder.profileScreen(
     }
 }
 
+private data class ProfileTabRoute<T : Any>(val name: String, val route: T)
+
+private val profileTabRoute = listOf(
+    ProfileTabRoute("Favourite Animes", FavouriteAnimesRoute),
+    ProfileTabRoute("Favourite Mangas", FavouriteMangasRoute)
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreen(
     modifier: Modifier = Modifier,
     onNavigateToAuthLanding: () -> Unit
 ) {
-    val scrollState = rememberScrollState(initial = 30)
+    val navController = rememberNavController()
     Column(
         modifier = modifier
-            .height(3000.dp)
-            .verticalScroll(state = scrollState)
+            .fillMaxSize()
+
     ) {
-        Row(
-            modifier = Modifier
-                .height(80.dp)
-                .padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
         ) {
             Image(
                 modifier = Modifier
-                    .clip(shape = CircleShape)
-                    .size(80.dp),
-                painter = painterResource(
-                    designR.drawable.user_profile,
-                ),
+                    .fillMaxWidth()
+                    .height(200.dp),
+                painter = painterResource(R.drawable.place_holder_image),
                 contentDescription = null,
+                contentScale = ContentScale.Crop
             )
-            Column(
+            UserProfile(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("User Name")
-                OutlinedButton(
-                    modifier = Modifier
-                        .heightIn(min = 24.dp),
-                    onClick = { },
-                    contentPadding = PaddingValues(
-                        vertical = 1.dp, horizontal = 16.dp
-                    )
-                ) {
-                    Text("Edit")
-                }
-            }
+                    .align(Alignment.BottomStart)
+            )
         }
-        Button(
-            modifier = modifier,
-            onClick = {
-                onNavigateToAuthLanding()
-            }
+        var tabState by remember { mutableIntStateOf(0) }
+
+        SecondaryTabRow(
+            selectedTabIndex = tabState,
         ) {
-            Text("Logout")
+            profileTabRoute.forEachIndexed { index, profileTabRoute ->
+                Tab(
+                    onClick = {
+                        tabState = index
+                        navController.navigate(profileTabRoute.route)
+                    },
+                    selected = tabState == index,
+                    text = {
+                        Text(
+                            text = profileTabRoute.name, maxLines = 1, overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = MaterialTheme.colorScheme.secondary,
+                )
+            }
+
+        }
+        NavHost(
+            modifier = Modifier.fillMaxWidth(),
+            navController = navController,
+            startDestination = FavouriteAnimesRoute,
+        ) {
+            favouriteAnimesScreen()
+            favouriteMangasScreen()
         }
     }
-
 }
+
 
 
 @Preview(showBackground = true, fontScale = 1.0f)
