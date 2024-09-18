@@ -1,6 +1,8 @@
 package com.skhkma.anidex.network.datasource
 
+import com.skhkma.anidex.model.AnimeDetailModel
 import com.skhkma.anidex.model.AnimeModel
+import com.skhkma.anidex.model.EpisodeModel
 import com.skhkma.anidex.network.mapper.AnimeMapper
 import com.skhkma.anidex.network.model.AnimeResponse
 import com.skhkma.anidex.network.utils.handle
@@ -18,5 +20,13 @@ internal class AnimeRemoteDataSourceImpl(
                 animeResponse = it
             )
         }
+    }
+
+    override suspend fun getAnimeDetails(id: String): Result<AnimeDetailModel> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getEpisodesByAnimeId(animeId: String): Result<List<EpisodeModel>> {
+        TODO("Not yet implemented")
     }
 }

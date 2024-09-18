@@ -46,6 +46,6 @@ fun AniDexNavHost(
         AuthNav(
             navController = navController
         )
-        animeDetailScreen()
+        animeDetailScreen(id = "0")
     }
 }
