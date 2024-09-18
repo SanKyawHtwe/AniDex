@@ -159,8 +159,7 @@ fun AnimeDetailScreen(modifier: Modifier = Modifier) {
                 HorizontalPager(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
-                        .padding(top = 8.dp),
+                        .weight(1f),
                     state = pagerState,
                 ) { index ->
                     if (index == 0) {

@@ -32,7 +32,7 @@ fun NavGraphBuilder.animeDetailSummaryScreen(){
 
 @Composable
 fun AnimeDetailSummaryScreen(modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(top = 8.dp)) {
         Row {
             Image(
                 modifier = Modifier
