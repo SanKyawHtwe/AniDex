@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "580622165415-5s4vva3g8q6jq9aj9a8onh3l9p0ntldh.apps.googleusercontent.com",
+          "client_id": "580622165415-0s1652ulv4rmqn7aft6mur84aemvooer.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.skhkma.anidex",
-            "certificate_hash": "dcd7cb56504414c9763cfdb8cde935be306f3e14"
+            "certificate_hash": "fcbecfe90f144a0c65fa85bcb9cf6c4037dfcaaa"
           }
         },
         {
