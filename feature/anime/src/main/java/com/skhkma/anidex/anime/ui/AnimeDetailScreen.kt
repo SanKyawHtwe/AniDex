@@ -47,6 +47,7 @@ import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.model.AnimeDetailModel
+import com.skhkma.anidex.model.Status
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -61,9 +62,11 @@ fun NavGraphBuilder.animeDetailScreen(id: String) {
         }
         val detailUiState = viewModel.detailUiState.collectAsStateWithLifecycle()
         val episodesUiState = viewModel.episodesUiState.collectAsStateWithLifecycle()
+        val categoryUiState = viewModel.animeCategoryUiState.collectAsStateWithLifecycle()
         AnimeDetailScreen(
             detailUiState = detailUiState.value,
-            episodesUiState = episodesUiState.value
+            episodesUiState = episodesUiState.value,
+            categoryUiState = categoryUiState.value
         )
     }
 }
@@ -80,7 +83,8 @@ private val animeDetailTabRoute = listOf(
 fun AnimeDetailScreen(
     modifier: Modifier = Modifier,
     detailUiState: AnimeDetailUiState,
-    episodesUiState: EpisodesUiState
+    episodesUiState: EpisodesUiState,
+    categoryUiState: AnimeCategoryUiState
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -110,7 +114,8 @@ fun AnimeDetailScreen(
                         model = detailUiState.anime.coverImage,
                         contentScale = ContentScale.Crop,
                         contentDescription = null,
-                        placeholder = painterResource(id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image),
+                        placeholder = painterResource(
+                            id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image),
                     )
                     Text(
                         modifier = Modifier
@@ -164,7 +169,8 @@ fun AnimeDetailScreen(
                     ) { index ->
                         if (index == 0) {
                             AnimeDetailSummaryScreen(
-                                anime = detailUiState.anime
+                                anime = detailUiState.anime,
+                                categoryUiState = categoryUiState
                             )
                         } else {
                             AnimeEpisodesScreen(
@@ -260,13 +266,14 @@ private fun Preview() {
                     posterImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
                     averageRating = "88.99%",
                     type = "TV",
-                    status = "Finished",
+                    status = Status.FINISHED,
                     startDate = "1998-04-03",
                     ageRating = "R",
                     description = "In the year 2071, humanity has colonoized several of the planets and moons..."
                 )
             ),
-            episodesUiState = EpisodesUiState.Loading
+            episodesUiState = EpisodesUiState.Loading,
+            categoryUiState = AnimeCategoryUiState.Loading
         )
     }
 }
@@ -277,7 +284,8 @@ private fun LoadingPreview() {
     AniDexTheme {
         AnimeDetailScreen(
             detailUiState = AnimeDetailUiState.Loading,
-            episodesUiState = EpisodesUiState.Loading
+            episodesUiState = EpisodesUiState.Loading,
+            categoryUiState = AnimeCategoryUiState.Loading
         )
     }
 }

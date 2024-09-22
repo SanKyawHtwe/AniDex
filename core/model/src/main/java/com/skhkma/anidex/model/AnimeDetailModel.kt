@@ -7,8 +7,18 @@ data class AnimeDetailModel(
     val posterImage: String,
     val averageRating: String,
     val type: String,
-    val status: String,
+    val status: Status,
     val startDate: String,
     val ageRating: String,
     val description: String
 )
+
+enum class Status(
+    val value: String
+){
+    CURRENT("current"),
+    FINISHED("finished"),
+    TO_BE_ANNOUNCED("tba"),
+    UNRELEASED("unreleased"),
+    UPCOMING("upcoming")
+}

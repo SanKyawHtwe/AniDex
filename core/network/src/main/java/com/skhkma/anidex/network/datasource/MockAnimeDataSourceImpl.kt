@@ -2,11 +2,56 @@ package com.skhkma.anidex.network.datasource
 
 import com.skhkma.anidex.model.AnimeDetailModel
 import com.skhkma.anidex.model.AnimeModel
+import com.skhkma.anidex.model.CategoryModel
 import com.skhkma.anidex.model.EpisodeModel
+import com.skhkma.anidex.model.Status
 
 class MockAnimeDataSourceImpl : AnimeRemoteDatasource {
     override suspend fun getAnimeList(): Result<List<AnimeModel>> {
         return Result.success(emptyList())
+    }
+
+    override suspend fun getCategories(id: String): Result<List<CategoryModel>> {
+        return Result.success(
+            listOf(
+                CategoryModel(
+                    id = "0",
+                    title = "Comedy"
+                ),
+                CategoryModel(
+                    id = "1",
+                    title = "Action"
+                ),
+                CategoryModel(
+                    id = "2",
+                    title = "Adventure"
+                ),
+                CategoryModel(
+                    id = "3",
+                    title = "Drama"
+                ),
+                CategoryModel(
+                    id = "4",
+                    title = "Magic"
+                ),
+                CategoryModel(
+                    id = "5",
+                    title = "Romance"
+                ),
+                CategoryModel(
+                    id = "6",
+                    title = "Fantasy"
+                ),
+                CategoryModel(
+                    id = "7",
+                    title = "Mystery"
+                ),
+                CategoryModel(
+                    id = "8",
+                    title = "Slice of Life"
+                ),
+            )
+        )
     }
 
     override suspend fun getAnimeDetails(id: String): Result<AnimeDetailModel> {
@@ -15,13 +60,14 @@ class MockAnimeDataSourceImpl : AnimeRemoteDatasource {
                 id = "0",
                 title = "Cowboy Bebop",
                 coverImage = "https://images.alphacoders.com/136/1361559.jpeg",
-                posterImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
+                posterImage =
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
                 averageRating = "88.99%",
                 type = "TV",
-                status = "Finished",
+                status = Status.FINISHED,
                 startDate = "1998-04-03",
                 ageRating = "R",
-                description = "In the year 2071, humanity has colonoized several of the planets and moons..."
+                description = "The journey to the martial peak is a lonely, solitary and long one.In the face of adversity,you must survive and remain unyielding.Only then can you break through and and continue on your journey to become the strongest. Sky Tower tests its disciples in the harshest ways to prepare them for this journey.One day the lowly sweeper Yang Kai managed to obtain a black book, setting him on the road to the peak of the martials world.(Source: MU)"
             )
         )
     }
