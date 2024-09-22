@@ -10,6 +10,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("keystore/anidex_debug_key.jks")
+            storePassword = "anidex"
+            keyAlias = "anidex_debug"
+            keyPassword = "anidex"
+        }
+        create("release") {
+            storeFile = rootProject.file("keystore/anidex_release_key.jks")
+            storePassword = "anidex"
+            keyAlias = "anidex_release"
+            keyPassword = "anidex"
+        }
+    }
     namespace = "com.skhkma.anidex"
     compileSdk = 34
 
@@ -27,12 +41,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -68,7 +87,7 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    
+
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
@@ -80,7 +99,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
-    implementation (libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(project(":feature:anime"))
     implementation(project(":feature:profile"))
