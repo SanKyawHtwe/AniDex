@@ -1,5 +1,6 @@
 package com.skhkma.anidex.anime.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -116,6 +118,17 @@ fun AnimeDetailScreen(
                         contentDescription = null,
                         placeholder = painterResource(
                             id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image),
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .align(Alignment.BottomCenter)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(Color.Transparent,Color.Black)
+                                )
+                            )
                     )
                     Text(
                         modifier = Modifier
