@@ -1,6 +1,7 @@
 package com.skhkma.anidex.anime.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -115,7 +116,7 @@ fun AnimeDetailScreen(
         if (detailUiState is AnimeDetailUiState.Success) {
             Column(
                 modifier = Modifier
-//                    .padding(contentPadding)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Box {
                     AsyncImage(
@@ -127,7 +128,8 @@ fun AnimeDetailScreen(
                         contentScale = ContentScale.Crop,
                         contentDescription = null,
                         placeholder = painterResource(
-                            id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image),
+                            id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image
+                        ),
                     )
                     Box(
                         modifier = Modifier
@@ -136,7 +138,7 @@ fun AnimeDetailScreen(
                             .align(Alignment.BottomCenter)
                             .background(
                                 Brush.verticalGradient(
-                                    listOf(Color.Transparent,Color.Black)
+                                    listOf(Color.Transparent, Color.Black)
                                 )
                             )
                     )
@@ -204,6 +206,7 @@ fun AnimeDetailScreen(
                 }
             }
         }
+
         if (detailUiState is AnimeDetailUiState.Loading) {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
