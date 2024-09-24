@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.skhkma.anidex.anime.ui
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
@@ -43,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -116,97 +120,21 @@ fun AnimeDetailScreen(
         }
     ) { contentPadding ->
         if (detailUiState is AnimeDetailUiState.Success) {
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
-                Box {
-                    AsyncImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(240.dp)
-                            .background(Color.Yellow),
-                        model = detailUiState.anime.coverImage,
-                        contentScale = ContentScale.Crop,
-                        contentDescription = null,
-                        placeholder = painterResource(
-                            id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image
-                        ),
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                            .align(Alignment.BottomCenter)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(Color.Transparent, Color.Black)
-                                )
-                            )
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(vertical = 12.dp, horizontal = 20.dp)
-                            .align(Alignment.BottomStart),
-                        text = detailUiState.anime.title,
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-                var tabState by remember { mutableIntStateOf(0) }
-                val pagerState = rememberPagerState {
-                    animeDetailTabRoute.size
-                }
-
-                LaunchedEffect(tabState) {
-                    pagerState.animateScrollToPage(tabState)
-                }
-                LaunchedEffect(pagerState.currentPage) {
-                    tabState = pagerState.currentPage
-                }
-
-                Column {
-                    SecondaryTabRow(
-                        selectedTabIndex = tabState,
-                    ) {
-                        animeDetailTabRoute.forEachIndexed { index, animeDetailTabRoute ->
-                            Tab(
-                                onClick = {
-                                    tabState = index
-                                },
-                                selected = tabState == index,
-                                text = {
-                                    Text(
-                                        text = animeDetailTabRoute.name,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                },
-                                selectedContentColor = MaterialTheme.colorScheme.primary,
-                                unselectedContentColor = MaterialTheme.colorScheme.secondary,
-                            )
-                        }
-
-                    }
-                    HorizontalPager(
-                        state = pagerState,
-                    ) { index ->
-                        if (index == 0) {
-                            AnimeDetailSummaryScreen(
-                                anime = detailUiState.anime,
-                                categoryUiState = categoryUiState
-                            )
-                        } else {
-                            AnimeEpisodesScreen(
-                                uiState = episodesUiState
-                            )
-                        }
-                    }
-                }
-
+                Header(
+                    scrollState = scrollState,
+                    coverImage = detailUiState.anime.coverImage,
+                    title = detailUiState.anime.title
+                )
+                TabsAndPager(
+                    detailModel = detailUiState.anime,
+                    episodesUiState = episodesUiState,
+                    categoryUiState = categoryUiState
+                )
                 Spacer(
                     modifier = Modifier.size(contentPadding.calculateBottomPadding().plus(24.dp))
                 )
@@ -228,6 +156,112 @@ fun AnimeDetailScreen(
     }
 }
 
+@Composable
+private fun Header(
+    modifier: Modifier = Modifier,
+    scrollState: ScrollState,
+    coverImage: String,
+    title: String
+) {
+    Box {
+        AsyncImage(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(240.dp)
+                .graphicsLayer {
+                    translationY = 0.5f * scrollState.value
+                },
+            model = coverImage,
+            contentScale = ContentScale.Crop,
+            contentDescription = null,
+            placeholder = painterResource(
+                id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image
+            ),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .align(Alignment.BottomCenter)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Transparent, Color.Black)
+                    )
+                )
+        )
+        Text(
+            modifier = Modifier
+                .padding(vertical = 12.dp, horizontal = 20.dp)
+                .align(Alignment.BottomStart),
+            text = title,
+            color = Color.White,
+            style = MaterialTheme.typography.titleLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+fun TabsAndPager(
+    modifier: Modifier = Modifier,
+    detailModel: AnimeDetailModel,
+    episodesUiState: EpisodesUiState,
+    categoryUiState: AnimeCategoryUiState
+) {
+    var tabState by remember { mutableIntStateOf(0) }
+    val pagerState = rememberPagerState {
+        animeDetailTabRoute.size
+    }
+
+    LaunchedEffect(tabState) {
+        pagerState.animateScrollToPage(tabState)
+    }
+    LaunchedEffect(pagerState.currentPage) {
+        tabState = pagerState.currentPage
+    }
+
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        SecondaryTabRow(
+            selectedTabIndex = tabState,
+        ) {
+            animeDetailTabRoute.forEachIndexed { index, animeDetailTabRoute ->
+                Tab(
+                    onClick = {
+                        tabState = index
+                    },
+                    selected = tabState == index,
+                    text = {
+                        Text(
+                            text = animeDetailTabRoute.name,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = MaterialTheme.colorScheme.secondary,
+                )
+            }
+        }
+        HorizontalPager(
+            state = pagerState,
+        ) { index ->
+            if (index == 0) {
+                AnimeDetailSummaryScreen(
+                    anime = detailModel,
+                    categoryUiState = categoryUiState
+                )
+            } else {
+                AnimeEpisodesScreen(
+                    uiState = episodesUiState
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
