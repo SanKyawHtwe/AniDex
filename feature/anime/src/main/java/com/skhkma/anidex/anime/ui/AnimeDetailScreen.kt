@@ -69,7 +69,9 @@ import org.koin.core.parameter.parametersOf
 @Serializable
 data class AnimeDetailRoute(val id: String)
 
-fun NavGraphBuilder.animeDetailScreen() {
+fun NavGraphBuilder.animeDetailScreen(
+    onNavigateUp: () -> Unit
+) {
     composable<AnimeDetailRoute> { backStackEntry ->
         val animeDetailRoute: AnimeDetailRoute = backStackEntry.toRoute()
         val viewModel: AnimeDetailViewModel = koinViewModel {
@@ -81,7 +83,8 @@ fun NavGraphBuilder.animeDetailScreen() {
         AnimeDetailScreen(
             detailUiState = detailUiState.value,
             episodesUiState = episodesUiState.value,
-            categoryUiState = categoryUiState.value
+            categoryUiState = categoryUiState.value,
+            onNavigateUp = onNavigateUp
         )
     }
 }
@@ -103,7 +106,8 @@ fun AnimeDetailScreen(
     modifier: Modifier = Modifier,
     detailUiState: AnimeDetailUiState,
     episodesUiState: EpisodesUiState,
-    categoryUiState: AnimeCategoryUiState
+    categoryUiState: AnimeCategoryUiState,
+    onNavigateUp: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -114,7 +118,7 @@ fun AnimeDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 title = null,
                 scrollBehavior = scrollBehavior,
-                onNavigateUp = { },
+                onNavigateUp = onNavigateUp,
                 onFavouriteClick = {}
             )
         }
@@ -181,11 +185,15 @@ private fun Header(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
+                .height(240.dp)
                 .align(Alignment.BottomCenter)
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color.Transparent, Color.Black)
+                        listOf(
+                            MaterialTheme.colorScheme.background,
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.background
+                        )
                     )
                 )
         )
@@ -194,7 +202,7 @@ private fun Header(
                 .padding(vertical = 12.dp, horizontal = 20.dp)
                 .align(Alignment.BottomStart),
             text = title,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -281,7 +289,7 @@ private fun AnimeDetailsAppBar(
         },
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0f),
             scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp)
         ),
         navigationIcon = {
@@ -330,7 +338,8 @@ private fun Preview() {
                 )
             ),
             episodesUiState = EpisodesUiState.Loading,
-            categoryUiState = AnimeCategoryUiState.Loading
+            categoryUiState = AnimeCategoryUiState.Loading,
+            onNavigateUp = {}
         )
     }
 }
@@ -342,7 +351,8 @@ private fun LoadingPreview() {
         AnimeDetailScreen(
             detailUiState = AnimeDetailUiState.Loading,
             episodesUiState = EpisodesUiState.Loading,
-            categoryUiState = AnimeCategoryUiState.Loading
+            categoryUiState = AnimeCategoryUiState.Loading,
+            onNavigateUp = {}
         )
     }
 }

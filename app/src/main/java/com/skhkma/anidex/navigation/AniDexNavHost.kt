@@ -50,6 +50,8 @@ fun AniDexNavHost(
         AuthNav(
             navController = navController
         )
-        animeDetailScreen()
+        animeDetailScreen(
+            onNavigateUp = navController::navigateUp
+        )
     }
 }
