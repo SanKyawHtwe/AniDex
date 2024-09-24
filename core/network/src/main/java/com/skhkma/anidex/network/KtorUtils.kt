@@ -7,13 +7,11 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 internal object KtorUtils {
-    fun createKtor(
-    ): HttpClient {
+    fun createKtor(): HttpClient {
         return HttpClient(Android) {
             install(ContentNegotiation) {
                 json(
-                    Json
-                    {
+                    Json {
                         ignoreUnknownKeys = true
                     }
                 )

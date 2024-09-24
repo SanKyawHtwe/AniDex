@@ -1,6 +1,5 @@
 package com.skhkma.anidex.anime.ui
 
-import android.net.NetworkInfo.DetailedState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skhkma.anidex.data.repository.AnimeRepository
@@ -37,8 +36,8 @@ internal class AnimeDetailViewModel(
             animeRepository.getAnimeDetails(animeId).fold(
                 {
                     _detailUiState.value = AnimeDetailUiState.Success(it)
-                    getAnimeEpisodes()
-                    getAnimeCategories()
+//                    getAnimeEpisodes()
+//                    getAnimeCategories()
                 },
                 {
                     _detailUiState.value =

@@ -1,6 +1,7 @@
 package com.skhkma.anidex.anime.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,13 +45,16 @@ import com.skhkma.anidex.designsystem.theme.AniDexTheme
 @Serializable
 data object AnimeRoute
 
-fun NavGraphBuilder.animeScreen() {
+fun NavGraphBuilder.animeScreen(
+    onAnimeClick: (String) -> Unit
+) {
     composable<AnimeRoute> {
         val viewModel: AnimeViewModel = koinViewModel()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
         AnimeScreen(
             uiState = uiState.value,
-            onRetry = viewModel::fetchAnimeList
+            onRetry = viewModel::fetchAnimeList,
+            onAnimeClick = onAnimeClick
         )
     }
 }
@@ -59,7 +63,8 @@ fun NavGraphBuilder.animeScreen() {
 private fun AnimeScreen(
     modifier: Modifier = Modifier,
     uiState: TrendingAnimeUiState,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onAnimeClick: (String) -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -80,7 +85,8 @@ private fun AnimeScreen(
                         }
                     ) { item ->
                         Anime(
-                            item = item
+                            item = item,
+                            onClick = onAnimeClick
                         )
                     }
                 }
@@ -110,7 +116,8 @@ private fun AnimeScreen(
 @Composable
 fun Anime(
     modifier: Modifier = Modifier,
-    item: AnimeModel
+    item: AnimeModel,
+    onClick: (String) -> Unit
 ) {
 
     var isIconClicked by remember {
@@ -121,6 +128,7 @@ fun Anime(
         modifier = modifier
             .width(150.dp)
             .padding(horizontal = 4.dp, vertical = 0.dp)
+            .clickable { onClick(item.id) }
     ) {
         Box() {
             AsyncImage(
@@ -201,7 +209,8 @@ fun AnimePreview() {
                 image = "abc",
                 id = "1",
                 title = "Anime Title"
-            )
+            ),
+            onClick = {}
         )
     }
 }
@@ -214,7 +223,8 @@ fun AnimeScreenSuccessPreview(
     AniDexTheme {
         AnimeScreen(
             uiState = uiState,
-            onRetry = { }
+            onRetry = { },
+            onAnimeClick = {}
         )
     }
 }

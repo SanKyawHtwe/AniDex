@@ -7,7 +7,7 @@ data class AnimeDetailModel(
     val posterImage: String,
     val averageRating: String,
     val type: String,
-    val status: Status,
+    val status: Status?,
     val startDate: String,
     val ageRating: String,
     val description: String

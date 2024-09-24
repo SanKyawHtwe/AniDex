@@ -44,8 +44,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import coil.compose.AsyncImage
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.model.AnimeDetailModel
@@ -55,12 +57,13 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Serializable
-data object AnimeDetailRoute
+data class AnimeDetailRoute(val id: String)
 
-fun NavGraphBuilder.animeDetailScreen(id: String) {
-    composable<AnimeDetailRoute> {
+fun NavGraphBuilder.animeDetailScreen() {
+    composable<AnimeDetailRoute> { backStackEntry ->
+        val animeDetailRoute: AnimeDetailRoute = backStackEntry.toRoute()
         val viewModel: AnimeDetailViewModel = koinViewModel {
-            parametersOf(id)
+            parametersOf(animeDetailRoute.id)
         }
         val detailUiState = viewModel.detailUiState.collectAsStateWithLifecycle()
         val episodesUiState = viewModel.episodesUiState.collectAsStateWithLifecycle()
@@ -71,6 +74,10 @@ fun NavGraphBuilder.animeDetailScreen(id: String) {
             categoryUiState = categoryUiState.value
         )
     }
+}
+
+fun NavController.navigateToAnimeDetail(id: String) {
+    navigate(AnimeDetailRoute(id))
 }
 
 private data class AnimeDetailTabRoute<T : Any>(val name: String, val route: T)

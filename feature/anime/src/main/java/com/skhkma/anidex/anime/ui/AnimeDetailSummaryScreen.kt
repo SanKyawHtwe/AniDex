@@ -73,7 +73,7 @@ fun AnimeDetailSummaryScreen(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "Status : ${anime.status.value}",
+                    text = "Status : ${anime.status?.value}",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
