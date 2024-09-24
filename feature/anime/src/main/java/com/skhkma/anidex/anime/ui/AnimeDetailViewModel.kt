@@ -31,13 +31,14 @@ internal class AnimeDetailViewModel(
     var animeCategoryUiState: StateFlow<AnimeCategoryUiState> = _animeCategoryUiState
 
     private fun getAnimeDetail() {
+
         viewModelScope.launch {
             _detailUiState.value = AnimeDetailUiState.Loading
             animeRepository.getAnimeDetails(animeId).fold(
                 {
                     _detailUiState.value = AnimeDetailUiState.Success(it)
 //                    getAnimeEpisodes()
-//                    getAnimeCategories()
+                    getAnimeCategories()
                 },
                 {
                     _detailUiState.value =

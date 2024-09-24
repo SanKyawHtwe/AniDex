@@ -3,6 +3,7 @@ package com.skhkma.anidex.anime.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -99,7 +102,6 @@ fun AnimeDetailScreen(
     Scaffold(
         modifier = modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-
         topBar = {
             AnimeDetailsAppBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -113,13 +115,14 @@ fun AnimeDetailScreen(
         if (detailUiState is AnimeDetailUiState.Success) {
             Column(
                 modifier = Modifier
-                    .padding(contentPadding)
+//                    .padding(contentPadding)
             ) {
                 Box {
                     AsyncImage(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(240.dp),
+                            .height(240.dp)
+                            .background(Color.Yellow),
                         model = detailUiState.anime.coverImage,
                         contentScale = ContentScale.Crop,
                         contentDescription = null,
@@ -199,15 +202,6 @@ fun AnimeDetailScreen(
                         }
                     }
                 }
-//            NavHost(
-//                modifier = Modifier.fillMaxWidth()
-//                    .padding(top = 12.dp),
-//                navController = navController,
-//                startDestination = AnimeDetailSummaryRoute,
-//            ) {
-//                animeDetailSummaryScreen()
-//                animeEpisodesScreen()
-//            }
             }
         }
         if (detailUiState is AnimeDetailUiState.Loading) {
@@ -244,7 +238,7 @@ private fun AnimeDetailsAppBar(
         },
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
             scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp)
         ),
         navigationIcon = {

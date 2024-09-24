@@ -5,9 +5,10 @@ import com.skhkma.anidex.model.AnimeModel
 import com.skhkma.anidex.model.CategoryModel
 import com.skhkma.anidex.model.EpisodeModel
 import com.skhkma.anidex.network.mapper.AnimeMapper
+import com.skhkma.anidex.network.mapper.CategoryMapper
 import com.skhkma.anidex.network.model.Anime
 import com.skhkma.anidex.network.model.AnimeDetailData
-import com.skhkma.anidex.network.utils.AnidexApiResponse
+import com.skhkma.anidex.network.model.CategoryResponse
 import com.skhkma.anidex.network.utils.handle
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -29,7 +30,13 @@ internal class AnimeRemoteDataSourceImpl(
     }
 
     override suspend fun getCategories(id: String): Result<List<CategoryModel>> {
-        TODO("Not yet implemented")
+        return handle<List<CategoryResponse>> {
+            httpClient.get("https://kitsu.io/api/edge/anime/$id/categories") {
+                header(HttpHeaders.Accept, "application/vnd.api+json")
+            }
+        }.map {
+            it.map { category -> CategoryMapper.toDomain(category) }
+        }
     }
 
     override suspend fun getAnimeDetails(id: String): Result<AnimeDetailModel> {

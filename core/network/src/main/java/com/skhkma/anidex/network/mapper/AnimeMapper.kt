@@ -32,6 +32,8 @@ internal object AnimeMapper {
         }
     }
 
+
+
     private fun toEnumStatus(status: String): Status {
         return when (status) {
             "current" -> Status.CURRENT

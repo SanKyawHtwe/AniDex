@@ -90,32 +90,21 @@ fun AnimeDetailSummaryScreen(
             }
         }
 
-        if (categoryUiState is AnimeCategoryUiState.Success){
-
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            repeat(categoryUiState.categories.size) { item ->
-//                    OutlinedButton(
-//                        modifier = Modifier.heightIn(min = 24.dp),
-//                        contentPadding = PaddingValues(
-//                            vertical = 8.dp,
-//                            horizontal = 12.dp
-//                        ),
-//                        onClick = {}
-//                    ) {
-//                        Text(text = flowItem[item])
-//                    }
-                SuggestionChip(
-                    onClick = {},
-                    label = { Text(text = categoryUiState.categories[item].title) }
-                )
-
+        if (categoryUiState is AnimeCategoryUiState.Success) {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                repeat(categoryUiState.categories.size) { item ->
+                    SuggestionChip(
+                        onClick = {},
+                        label = { Text(text = categoryUiState.categories[item].title) }
+                    )
+                }
             }
-        }}
+        }
         Text(
             modifier = Modifier
                 .fillMaxWidth()
