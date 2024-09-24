@@ -1,5 +1,8 @@
 package com.skhkma.anidex.anime.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -30,12 +33,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object AnimeDetailSummaryRoute
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AnimeDetailSummaryScreen(
     modifier: Modifier = Modifier,
     anime: AnimeDetailModel,
-    categoryUiState: AnimeCategoryUiState
+    categoryUiState: AnimeCategoryUiState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
     Column(
         modifier = modifier
@@ -43,16 +48,22 @@ fun AnimeDetailSummaryScreen(
             .fillMaxSize(),
     ) {
         Row {
-            AsyncImage(
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(200.dp)
-                    .padding(start = 20.dp),
-                model = anime.posterImage,
-                contentScale = ContentScale.Crop,
-                contentDescription = null,
-                placeholder = painterResource(id = R.drawable.place_holder_image),
-            )
+            with(sharedTransitionScope) {
+                AsyncImage(
+                    modifier = Modifier
+                        .sharedElement(
+                            sharedTransitionScope.rememberSharedContentState(key = "image-${anime.id}"),
+                            animatedVisibilityScope = animatedContentScope
+                        )
+                        .width(150.dp)
+                        .height(200.dp)
+                        .padding(start = 20.dp),
+                    model = anime.posterImage,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null,
+                    placeholder = painterResource(id = R.drawable.place_holder_image),
+                )
+            }
             Column(
                 modifier = Modifier.padding(
                     vertical = 12.dp,
@@ -112,39 +123,39 @@ fun AnimeDetailSummaryScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun SummaryPreview() {
-    AniDexTheme {
-        AnimeDetailSummaryScreen(
-            anime = AnimeDetailModel(
-                id = "0",
-                title = "Cowboy Bebop",
-                coverImage = "https://images.alphacoders.com/136/1361559.jpeg",
-                posterImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
-                averageRating = "88.99%",
-                type = "TV",
-                status = Status.FINISHED,
-                startDate = "1998-04-03",
-                ageRating = "R",
-                description = "In the year 2071, humanity has colonized several of the planets and moons..."
-            ),
-            categoryUiState = AnimeCategoryUiState.Success(
-                listOf(
-                    CategoryModel(
-                        id = "0",
-                        title = "Comedy"
-                    ),
-                    CategoryModel(
-                        id = "0",
-                        title = "Comedy"
-                    ),
-                    CategoryModel(
-                        id = "0",
-                        title = "Comedy"
-                    ),
-                )
-            )
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun SummaryPreview() {
+//    AniDexTheme {
+//        AnimeDetailSummaryScreen(
+//            anime = AnimeDetailModel(
+//                id = "0",
+//                title = "Cowboy Bebop",
+//                coverImage = "https://images.alphacoders.com/136/1361559.jpeg",
+//                posterImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
+//                averageRating = "88.99%",
+//                type = "TV",
+//                status = Status.FINISHED,
+//                startDate = "1998-04-03",
+//                ageRating = "R",
+//                description = "In the year 2071, humanity has colonized several of the planets and moons..."
+//            ),
+//            categoryUiState = AnimeCategoryUiState.Success(
+//                listOf(
+//                    CategoryModel(
+//                        id = "0",
+//                        title = "Comedy"
+//                    ),
+//                    CategoryModel(
+//                        id = "0",
+//                        title = "Comedy"
+//                    ),
+//                    CategoryModel(
+//                        id = "0",
+//                        title = "Comedy"
+//                    ),
+//                )
+//            )
+//        )
+//    }
+//}

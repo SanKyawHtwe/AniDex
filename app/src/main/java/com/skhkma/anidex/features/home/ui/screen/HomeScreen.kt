@@ -1,5 +1,8 @@
 package com.skhkma.anidex.features.home.ui.screen
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -52,16 +55,20 @@ fun NavController.navigateToHomeScreen(
     navigate(HomeRoute, navOptions = navOptions)
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.homeScreen(
     onNavigateToManga: () -> Unit,
     onNavigateToAuthLanding: () -> Unit,
     onAnimeClick: (String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
 ) {
     composable<HomeRoute> {
         HomeScreen(
             onNavigateToManga = onNavigateToManga,
             onNavigateToAuthLanding = onNavigateToAuthLanding,
-            onAnimeClick = onAnimeClick
+            onAnimeClick = onAnimeClick,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this
         )
     }
 }
@@ -75,13 +82,15 @@ private val topLevelRoutes = listOf(
     TopLevelRoute("Profile", ProfileRoute, Icons.Filled.Person)
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToManga: () -> Unit,
     onNavigateToAuthLanding: () -> Unit,
     onAnimeClick: (String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -175,7 +184,11 @@ private fun HomeScreen(
                 ) + fadeOut()
             },
         ) {
-            animeScreen(onAnimeClick = onAnimeClick)
+            animeScreen(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
+                onAnimeClick = onAnimeClick
+            )
             mangaScreen()
             watchlistScreen()
             profileScreen(onNavigateToAuthLanding = onNavigateToAuthLanding)
@@ -184,14 +197,14 @@ private fun HomeScreen(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-private fun HomeScreenPreview() {
-    AniDexTheme {
-        HomeScreen(
-            onNavigateToManga = {},
-            onNavigateToAuthLanding = {},
-            onAnimeClick = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun HomeScreenPreview() {
+//    AniDexTheme {
+//        HomeScreen(
+//            onNavigateToManga = {},
+//            onNavigateToAuthLanding = {},
+//            onAnimeClick = {}
+//        )
+//    }
+//}

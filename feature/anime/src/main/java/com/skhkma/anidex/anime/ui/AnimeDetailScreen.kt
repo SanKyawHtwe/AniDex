@@ -2,6 +2,9 @@
 
 package com.skhkma.anidex.anime.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -67,7 +70,9 @@ import org.koin.core.parameter.parametersOf
 @Serializable
 data class AnimeDetailRoute(val id: String)
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.animeDetailScreen(
+    sharedTransitionScope: SharedTransitionScope,
     onNavigateUp: () -> Unit
 ) {
     composable<AnimeDetailRoute> { backStackEntry ->
@@ -82,6 +87,8 @@ fun NavGraphBuilder.animeDetailScreen(
             detailUiState = detailUiState.value,
             episodesUiState = episodesUiState.value,
             categoryUiState = categoryUiState.value,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this,
             onNavigateUp = onNavigateUp
         )
     }
@@ -98,13 +105,15 @@ private val animeDetailTabRoute = listOf(
     AnimeDetailTabRoute("Episodes", AnimeEpisodesRoute)
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AnimeDetailScreen(
     modifier: Modifier = Modifier,
     detailUiState: AnimeDetailUiState,
     episodesUiState: EpisodesUiState,
     categoryUiState: AnimeCategoryUiState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     onNavigateUp: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -129,13 +138,18 @@ fun AnimeDetailScreen(
             ) {
                 Header(
                     scrollState = scrollState,
+                    animeId = detailUiState.anime.id,
                     coverImage = detailUiState.anime.coverImage,
-                    title = detailUiState.anime.title
+                    title = detailUiState.anime.title,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope
                 )
                 TabsAndPager(
                     detailModel = detailUiState.anime,
                     episodesUiState = episodesUiState,
-                    categoryUiState = categoryUiState
+                    categoryUiState = categoryUiState,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
                 )
                 Spacer(
                     modifier = Modifier.size(contentPadding.calculateBottomPadding().plus(24.dp))
@@ -158,12 +172,16 @@ fun AnimeDetailScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
     scrollState: ScrollState,
+    animeId: String,
     coverImage: String,
-    title: String
+    title: String,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
     Box(
         modifier = modifier
@@ -197,25 +215,34 @@ private fun Header(
                     )
                 )
         )
-        Text(
-            modifier = Modifier
-                .padding(vertical = 12.dp, horizontal = 20.dp)
-                .align(Alignment.BottomStart),
-            text = title,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        with(sharedTransitionScope) {
+            Text(
+                modifier = Modifier
+                    .sharedElement(
+                        sharedTransitionScope.rememberSharedContentState(key = "text-$animeId"),
+                        animatedVisibilityScope = animatedContentScope
+                    )
+                    .padding(vertical = 12.dp, horizontal = 20.dp)
+                    .align(Alignment.BottomStart),
+                text = title,
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TabsAndPager(
     modifier: Modifier = Modifier,
     detailModel: AnimeDetailModel,
     episodesUiState: EpisodesUiState,
-    categoryUiState: AnimeCategoryUiState
+    categoryUiState: AnimeCategoryUiState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
     var tabState by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState {
@@ -260,7 +287,9 @@ fun TabsAndPager(
             if (index == 0) {
                 AnimeDetailSummaryScreen(
                     anime = detailModel,
-                    categoryUiState = categoryUiState
+                    categoryUiState = categoryUiState,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope
                 )
             } else {
                 AnimeEpisodesScreen(
@@ -318,41 +347,41 @@ private fun AnimeDetailsAppBar(
 }
 
 
-@Preview
-@Composable
-private fun Preview() {
-    AniDexTheme {
-        AnimeDetailScreen(
-            detailUiState = AnimeDetailUiState.Success(
-                AnimeDetailModel(
-                    id = "0",
-                    title = "Cowboy Bebop",
-                    coverImage = "https://images.alphacoders.com/136/1361559.jpeg",
-                    posterImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
-                    averageRating = "88.99%",
-                    type = "TV",
-                    status = Status.FINISHED,
-                    startDate = "1998-04-03",
-                    ageRating = "R",
-                    description = "In the year 2071, humanity has colonoized several of the planets and moons..."
-                )
-            ),
-            episodesUiState = EpisodesUiState.Loading,
-            categoryUiState = AnimeCategoryUiState.Loading,
-            onNavigateUp = {}
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun Preview() {
+//    AniDexTheme {
+//        AnimeDetailScreen(
+//            detailUiState = AnimeDetailUiState.Success(
+//                AnimeDetailModel(
+//                    id = "0",
+//                    title = "Cowboy Bebop",
+//                    coverImage = "https://images.alphacoders.com/136/1361559.jpeg",
+//                    posterImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
+//                    averageRating = "88.99%",
+//                    type = "TV",
+//                    status = Status.FINISHED,
+//                    startDate = "1998-04-03",
+//                    ageRating = "R",
+//                    description = "In the year 2071, humanity has colonoized several of the planets and moons..."
+//                )
+//            ),
+//            episodesUiState = EpisodesUiState.Loading,
+//            categoryUiState = AnimeCategoryUiState.Loading,
+//            onNavigateUp = {}
+//        )
+//    }
+//}
 
-@Preview
-@Composable
-private fun LoadingPreview() {
-    AniDexTheme {
-        AnimeDetailScreen(
-            detailUiState = AnimeDetailUiState.Loading,
-            episodesUiState = EpisodesUiState.Loading,
-            categoryUiState = AnimeCategoryUiState.Loading,
-            onNavigateUp = {}
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun LoadingPreview() {
+//    AniDexTheme {
+//        AnimeDetailScreen(
+//            detailUiState = AnimeDetailUiState.Loading,
+//            episodesUiState = EpisodesUiState.Loading,
+//            categoryUiState = AnimeCategoryUiState.Loading,
+//            onNavigateUp = {}
+//        )
+//    }
+//}

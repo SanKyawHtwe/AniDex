@@ -37,7 +37,7 @@ internal class AnimeDetailViewModel(
             animeRepository.getAnimeDetails(animeId).fold(
                 {
                     _detailUiState.value = AnimeDetailUiState.Success(it)
-//                    getAnimeEpisodes()
+                    getAnimeEpisodes()
                     getAnimeCategories()
                 },
                 {

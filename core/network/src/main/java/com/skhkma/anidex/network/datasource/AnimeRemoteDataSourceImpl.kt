@@ -6,9 +6,11 @@ import com.skhkma.anidex.model.CategoryModel
 import com.skhkma.anidex.model.EpisodeModel
 import com.skhkma.anidex.network.mapper.AnimeMapper
 import com.skhkma.anidex.network.mapper.CategoryMapper
+import com.skhkma.anidex.network.mapper.EpisodeMapper
 import com.skhkma.anidex.network.model.Anime
 import com.skhkma.anidex.network.model.AnimeDetailData
 import com.skhkma.anidex.network.model.CategoryResponse
+import com.skhkma.anidex.network.model.EpisodeResponse
 import com.skhkma.anidex.network.utils.handle
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -50,7 +52,13 @@ internal class AnimeRemoteDataSourceImpl(
     }
 
     override suspend fun getEpisodesByAnimeId(animeId: String): Result<List<EpisodeModel>> {
-        TODO("Not yet implemented")
+        return handle<List<EpisodeResponse>> {
+            httpClient.get("https://kitsu.io/api/edge/anime/$animeId/episodes") {
+                header(HttpHeaders.Accept, "application/vnd.api+json")
+            }
+        }.map {
+            it.map { episode -> EpisodeMapper.toDomain(episode) }
+        }
     }
 
 }
