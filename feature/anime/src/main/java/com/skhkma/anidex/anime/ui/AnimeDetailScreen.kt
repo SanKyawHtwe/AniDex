@@ -4,14 +4,12 @@ package com.skhkma.anidex.anime.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -167,11 +165,14 @@ private fun Header(
     coverImage: String,
     title: String
 ) {
-    Box {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1.6f)
+    ) {
         AsyncImage(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(240.dp)
+            modifier = Modifier
+                .fillMaxSize()
                 .graphicsLayer {
                     translationY = 0.5f * scrollState.value
                 },
@@ -184,8 +185,7 @@ private fun Header(
         )
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp)
+                .fillMaxSize()
                 .align(Alignment.BottomCenter)
                 .background(
                     Brush.verticalGradient(
