@@ -29,3 +29,4 @@ include(":core:network")
 
 include(":feature:anime")
 include(":feature:profile")
+include(":feature:home")

@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.home.ui.screen
+package com.skhkma.anidex.home.ui.screen
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -27,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -40,8 +38,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.skhkma.anidex.anime.ui.AnimeRoute
 import com.skhkma.anidex.anime.ui.animeScreen
-import com.skhkma.anidex.anime.ui.navigateToAnimeDetail
-import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.profile.ui.ProfileRoute
 import com.skhkma.anidex.profile.ui.profileScreen
 import kotlinx.serialization.Serializable

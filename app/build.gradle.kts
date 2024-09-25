@@ -101,9 +101,9 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(project(":feature:anime"))
-    implementation(project(":feature:profile"))
+    implementation(project(":feature:home"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:model"))
 
     //Test
     testImplementation(libs.junit)

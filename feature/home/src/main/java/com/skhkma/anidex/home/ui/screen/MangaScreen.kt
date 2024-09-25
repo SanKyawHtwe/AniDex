@@ -1,4 +1,4 @@
-package com.skhkma.anidex.features.home.ui.screen
+package com.skhkma.anidex.home.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

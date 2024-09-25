@@ -20,14 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.skhkma.anidex.designsystem.R
-import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.model.AnimeDetailModel
-import com.skhkma.anidex.model.CategoryModel
-import com.skhkma.anidex.model.Status
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -116,7 +112,7 @@ fun AnimeDetailSummaryScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            text = anime.description,
+            text = anime?.description.orEmpty(),
             maxLines = 7,
             overflow = TextOverflow.Ellipsis
         )
