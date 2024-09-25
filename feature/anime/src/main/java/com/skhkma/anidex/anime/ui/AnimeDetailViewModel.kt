@@ -8,6 +8,7 @@ import com.skhkma.anidex.model.CategoryModel
 import com.skhkma.anidex.model.EpisodeModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 internal class AnimeDetailViewModel(
@@ -31,20 +32,21 @@ internal class AnimeDetailViewModel(
     var animeCategoryUiState: StateFlow<AnimeCategoryUiState> = _animeCategoryUiState
 
     private fun getAnimeDetail() {
-
         viewModelScope.launch {
             _detailUiState.value = AnimeDetailUiState.Loading
-            animeRepository.getAnimeDetails(animeId).fold(
-                {
-                    _detailUiState.value = AnimeDetailUiState.Success(it)
-                    getAnimeEpisodes()
-                    getAnimeCategories()
-                },
-                {
-                    _detailUiState.value =
-                        AnimeDetailUiState.Error(it.message ?: "Something went wrong.")
-                }
-            )
+            animeRepository.getAnimeDetails(animeId).collectLatest {
+                it.fold(
+                    {
+                        _detailUiState.value = AnimeDetailUiState.Success(it)
+                        getAnimeEpisodes()
+                        getAnimeCategories()
+                    },
+                    {
+                        _detailUiState.value =
+                            AnimeDetailUiState.Error(it.message ?: "Something went wrong.")
+                    }
+                )
+            }
         }
     }
 
