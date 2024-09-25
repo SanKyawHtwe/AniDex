@@ -1,39 +1,35 @@
 package com.skhkma.anidex.network.model
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class AnimeResponse(
-    val data : List<Anime>
-)
-
-@Serializable
 internal data class Anime(
-    val id : String,
-    val type : String?,
-    val attributes : Attributes?
+    val id: String,
+    val type: String?,
+    val attributes: Attributes?
 )
 
 @Serializable
 internal data class Attributes(
-    val titles : Map<String,String>?,
-    val posterImage : PosterImage?
+    val titles: Map<String, String>?,
+    val posterImage: PosterImage?,
+    val description: String?,
+    val canonicalTitle: String?,
+    val averageRating: String?,
+    val startDate: String?,
+    val ageRating: String?,
+    val status: String?,
+    val coverImage: CoverImage?,
+    val subtype: String?
+)
+
+@Serializable
+internal data class CoverImage(
+    val original: String?
 )
 
 @Serializable
 internal data class PosterImage(
-    val small : String?,
-)
-
-
-@Serializable
-internal data class Title(
-    @SerialName("en")
-    val english : String?,
-    @SerialName("en_jp")
-    val romaji : String?,
-    @SerialName("ja_jp")
-    val japanese : String?
+    val small: String?,
 )
 

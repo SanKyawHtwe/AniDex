@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.skhkma.anidex.data"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 23

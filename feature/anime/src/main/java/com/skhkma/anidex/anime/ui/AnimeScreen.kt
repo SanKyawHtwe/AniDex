@@ -1,6 +1,10 @@
 package com.skhkma.anidex.anime.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,37 +33,48 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
+import com.skhkma.anidex.designsystem.R
+import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.model.AnimeModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
-import com.skhkma.anidex.designsystem.R
-import com.skhkma.anidex.designsystem.theme.AniDexTheme
 
 @Serializable
 data object AnimeRoute
 
-fun NavGraphBuilder.animeScreen() {
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun NavGraphBuilder.animeScreen(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    onAnimeClick: (String) -> Unit,
+) {
     composable<AnimeRoute> {
         val viewModel: AnimeViewModel = koinViewModel()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
         AnimeScreen(
             uiState = uiState.value,
-            onRetry = viewModel::fetchAnimeList
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            onRetry = viewModel::fetchAnimeList,
+            onAnimeClick = onAnimeClick
         )
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun AnimeScreen(
     modifier: Modifier = Modifier,
     uiState: TrendingAnimeUiState,
-    onRetry: () -> Unit
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    onRetry: () -> Unit,
+    onAnimeClick: (String) -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -80,7 +95,10 @@ private fun AnimeScreen(
                         }
                     ) { item ->
                         Anime(
-                            item = item
+                            item = item,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedContentScope = animatedContentScope,
+                            onClick = onAnimeClick
                         )
                     }
                 }
@@ -107,10 +125,14 @@ private fun AnimeScreen(
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun Anime(
     modifier: Modifier = Modifier,
-    item: AnimeModel
+    item: AnimeModel,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    onClick: (String) -> Unit
 ) {
 
     var isIconClicked by remember {
@@ -121,45 +143,57 @@ fun Anime(
         modifier = modifier
             .width(150.dp)
             .padding(horizontal = 4.dp, vertical = 0.dp)
+            .clickable { onClick(item.id) }
     ) {
-        Box() {
-            AsyncImage(
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(200.dp),
-                model = item.image,
-                contentScale = ContentScale.FillBounds,
-                contentDescription = null,
-                placeholder = painterResource(id = R.drawable.place_holder_image),
-            )
-            IconButton(modifier = Modifier
-                .align(Alignment.TopEnd),
-                onClick = {
-                    isIconClicked = !isIconClicked
-                }
-            )
-            {
-                Icon(
+        with(sharedTransitionScope) {
+            Box {
+                AsyncImage(
                     modifier = Modifier
-                        .size(24.dp)
-                        .background(MaterialTheme.colorScheme.errorContainer),
-                    painter = painterResource(
-                        id = if (isIconClicked) {
-                            R.drawable.ic_watchlist_added
-                        } else {
-                            R.drawable.ic_add_to_watchlist
-                        }
-                    ),
+                        .sharedElement(
+                            sharedTransitionScope.rememberSharedContentState(key = "image-${item.id}"),
+                            animatedVisibilityScope = animatedContentScope
+                        )
+                        .width(150.dp)
+                        .height(200.dp),
+                    model = item.image,
+                    contentScale = ContentScale.FillBounds,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error
+                    placeholder = painterResource(id = R.drawable.place_holder_image),
                 )
+                IconButton(modifier = Modifier
+                    .align(Alignment.TopEnd),
+                    onClick = {
+                        isIconClicked = !isIconClicked
+                    }
+                )
+                {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(MaterialTheme.colorScheme.errorContainer),
+                        painter = painterResource(
+                            id = if (isIconClicked) {
+                                R.drawable.ic_watchlist_added
+                            } else {
+                                R.drawable.ic_add_to_watchlist
+                            }
+                        ),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
+            Text(
+                item.title,
+                modifier = Modifier
+                    .sharedElement(
+                        sharedTransitionScope.rememberSharedContentState(key = "text-${item.id}"),
+                        animatedVisibilityScope = animatedContentScope,
+                    ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
-        Text(
-            item.title,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 
@@ -192,29 +226,32 @@ fun ErrorViewPreview() {
 }
 
 
-@Preview
-@Composable
-fun AnimePreview() {
-    AniDexTheme {
-        Anime(
-            item = AnimeModel(
-                image = "abc",
-                id = "1",
-                title = "Anime Title"
-            )
-        )
-    }
-}
+//@OptIn(ExperimentalSharedTransitionApi::class)
+//@Preview
+//@Composable
+//fun AnimePreview() {
+//    AniDexTheme {
+//        Anime(
+//            item = AnimeModel(
+//                image = "abc",
+//                id = "1",
+//                title = "Anime Title"
+//            ),
+//            onClick = {}
+//        )
+//    }
+//}
 
-@Preview(apiLevel = 34, showSystemUi = true, showBackground = true, fontScale = 1.0f)
-@Composable
-fun AnimeScreenSuccessPreview(
-    @PreviewParameter(AnimeUiStatePreviewParameterProvider::class) uiState: TrendingAnimeUiState
-) {
-    AniDexTheme {
-        AnimeScreen(
-            uiState = uiState,
-            onRetry = { }
-        )
-    }
-}
+//@Preview(apiLevel = 34, showSystemUi = true, showBackground = true, fontScale = 1.0f)
+//@Composable
+//fun AnimeScreenSuccessPreview(
+//    @PreviewParameter(AnimeUiStatePreviewParameterProvider::class) uiState: TrendingAnimeUiState
+//) {
+//    AniDexTheme {
+//        AnimeScreen(
+//            uiState = uiState,
+//            onRetry = { },
+//            onAnimeClick = {}
+//        )
+//    }
+//}

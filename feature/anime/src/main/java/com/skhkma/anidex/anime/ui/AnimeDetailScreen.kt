@@ -1,19 +1,25 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.skhkma.anidex.anime.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -24,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -38,35 +43,55 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.skhkma.anidex.anime.R
-import com.skhkma.anidex.designsystem.theme.AniDexTheme
+import androidx.navigation.toRoute
+import coil.compose.AsyncImage
+import com.skhkma.anidex.model.AnimeDetailModel
+import com.skhkma.anidex.model.AnimeModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
-import com.skhkma.anidex.designsystem.R as designR
+import org.koin.core.parameter.parametersOf
 
 @Serializable
-data object AnimeDetailRoute
+data class AnimeDetailRoute(val id: String)
 
-fun NavGraphBuilder.animeDetailScreen() {
-    composable<AnimeDetailRoute> {
-        val viewModel: AnimeViewModel = koinViewModel()
-        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun NavGraphBuilder.animeDetailScreen(
+    sharedTransitionScope: SharedTransitionScope,
+    onNavigateUp: () -> Unit
+) {
+    composable<AnimeDetailRoute> { backStackEntry ->
+        val animeDetailRoute: AnimeDetailRoute = backStackEntry.toRoute()
+        val viewModel: AnimeDetailViewModel = koinViewModel {
+            parametersOf(animeDetailRoute.id)
+        }
+        val detailUiState = viewModel.detailUiState.collectAsStateWithLifecycle()
+        val episodesUiState = viewModel.episodesUiState.collectAsStateWithLifecycle()
+        val categoryUiState = viewModel.animeCategoryUiState.collectAsStateWithLifecycle()
         AnimeDetailScreen(
+            detailUiState = detailUiState.value,
+            episodesUiState = episodesUiState.value,
+            categoryUiState = categoryUiState.value,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this,
+            onNavigateUp = onNavigateUp
         )
     }
+}
+
+fun NavController.navigateToAnimeDetail(id: String) {
+    navigate(AnimeDetailRoute(id))
 }
 
 private data class AnimeDetailTabRoute<T : Any>(val name: String, val route: T)
@@ -76,113 +101,200 @@ private val animeDetailTabRoute = listOf(
     AnimeDetailTabRoute("Episodes", AnimeEpisodesRoute)
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun AnimeDetailScreen(modifier: Modifier = Modifier) {
+fun AnimeDetailScreen(
+    modifier: Modifier = Modifier,
+    detailUiState: AnimeDetailUiState,
+    episodesUiState: EpisodesUiState,
+    categoryUiState: AnimeCategoryUiState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    onNavigateUp: () -> Unit
+) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val navController = rememberNavController()
     Scaffold(
         modifier = modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-
         topBar = {
             AnimeDetailsAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 title = null,
                 scrollBehavior = scrollBehavior,
-                onNavigateUp = { },
+                onNavigateUp = onNavigateUp,
                 onFavouriteClick = {}
             )
         }
     ) { contentPadding ->
-        Column(
+        if (detailUiState is AnimeDetailUiState.Success) {
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+            ) {
+                Header(
+                    scrollState = scrollState,
+                    animeId = detailUiState.anime.id,
+                    coverImage = detailUiState.anime.coverImage,
+                    title = detailUiState.anime.title,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope
+                )
+                TabsAndPager(
+                    detailModel = detailUiState.anime,
+                    episodesUiState = episodesUiState,
+                    categoryUiState = categoryUiState,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
+                )
+                Spacer(
+                    modifier = Modifier.size(contentPadding.calculateBottomPadding().plus(24.dp))
+                )
+            }
+        }
+
+//        if (detailUiState is AnimeDetailUiState.Loading) {
+//            Box(modifier = Modifier.fillMaxSize()) {
+//                CircularProgressIndicator(
+//                    modifier = Modifier
+//                        .width(64.dp)
+//                        .align(Alignment.Center),
+//                    color = MaterialTheme.colorScheme.secondary,
+//                    strokeCap = StrokeCap.Butt,
+//                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+//                )
+//            }
+//        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun Header(
+    modifier: Modifier = Modifier,
+    scrollState: ScrollState,
+    animeId: String,
+    coverImage: String,
+    title: String,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1.6f)
+    ) {
+        AsyncImage(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding)
-        ) {
-            Box {
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(240.dp),
-                    painter = painterResource(designR.drawable.anime_cover),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp, horizontal = 20.dp)
-                        .align(Alignment.BottomStart),
-                    text = "Attack On Titans",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            var tabState by remember { mutableIntStateOf(0) }
-            val pagerState = rememberPagerState {
-                animeDetailTabRoute.size
-            }
-
-            LaunchedEffect(tabState) {
-                pagerState.animateScrollToPage(tabState)
-            }
-            LaunchedEffect(pagerState.currentPage) {
-                tabState = pagerState.currentPage
-            }
-
-            Column {
-                SecondaryTabRow(
-                    selectedTabIndex = tabState,
-                ) {
-                    animeDetailTabRoute.forEachIndexed { index, animeDetailTabRoute ->
-                        Tab(
-                            onClick = {
-                                tabState = index
-                            },
-                            selected = tabState == index,
-                            text = {
-                                Text(
-                                    text = animeDetailTabRoute.name,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            },
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = MaterialTheme.colorScheme.secondary,
+                .graphicsLayer {
+                    translationY = 0.5f * scrollState.value
+                },
+            model = coverImage,
+            contentScale = ContentScale.Crop,
+            contentDescription = null,
+            placeholder = painterResource(
+                id = com.skhkma.anidex.designsystem.R.drawable.place_holder_image
+            ),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.BottomCenter)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.background,
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.background
                         )
-                    }
-
-                }
-                HorizontalPager(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(top = 8.dp),
-                    state = pagerState,
-                ) { index ->
-                    if (index == 0) {
-                        AnimeDetailSummaryScreen()
-                    } else {
-                        AnimeEpisodesScreen()
-                    }
-                }
-            }
-//            NavHost(
-//                modifier = Modifier.fillMaxWidth()
-//                    .padding(top = 12.dp),
-//                navController = navController,
-//                startDestination = AnimeDetailSummaryRoute,
-//            ) {
-//                animeDetailSummaryScreen()
-//                animeEpisodesScreen()
-//            }
+                    )
+                )
+        )
+        with(sharedTransitionScope) {
+            Text(
+                modifier = Modifier
+                    .sharedElement(
+                        sharedTransitionScope.rememberSharedContentState(key = "text-$animeId"),
+                        animatedVisibilityScope = animatedContentScope
+                    )
+                    .padding(vertical = 12.dp, horizontal = 20.dp)
+                    .align(Alignment.BottomStart),
+                text = title,
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun TabsAndPager(
+    modifier: Modifier = Modifier,
+    detailModel: AnimeDetailModel,
+    episodesUiState: EpisodesUiState,
+    categoryUiState: AnimeCategoryUiState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    var tabState by remember { mutableIntStateOf(0) }
+    val pagerState = rememberPagerState {
+        animeDetailTabRoute.size
+    }
+
+    LaunchedEffect(tabState) {
+        pagerState.animateScrollToPage(tabState)
+    }
+    LaunchedEffect(pagerState.currentPage) {
+        tabState = pagerState.currentPage
+    }
+
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        SecondaryTabRow(
+            selectedTabIndex = tabState,
+        ) {
+            animeDetailTabRoute.forEachIndexed { index, animeDetailTabRoute ->
+                Tab(
+                    onClick = {
+                        tabState = index
+                    },
+                    selected = tabState == index,
+                    text = {
+                        Text(
+                            text = animeDetailTabRoute.name,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = MaterialTheme.colorScheme.secondary,
+                )
+            }
+        }
+        HorizontalPager(
+            state = pagerState,
+        ) { index ->
+            if (index == 0) {
+                AnimeDetailSummaryScreen(
+                    anime = detailModel,
+                    categoryUiState = categoryUiState,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope
+                )
+            } else {
+                AnimeEpisodesScreen(
+                    uiState = episodesUiState
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -231,12 +343,41 @@ private fun AnimeDetailsAppBar(
 }
 
 
-@Preview
-@Composable
-private fun Preview() {
-    AniDexTheme {
-        AnimeDetailScreen(
+//@Preview
+//@Composable
+//private fun Preview() {
+//    AniDexTheme {
+//        AnimeDetailScreen(
+//            detailUiState = AnimeDetailUiState.Success(
+//                AnimeDetailModel(
+//                    id = "0",
+//                    title = "Cowboy Bebop",
+//                    coverImage = "https://images.alphacoders.com/136/1361559.jpeg",
+//                    posterImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6F_0YOA3QEJIjPoJAS_gUMv6_N5X-Dt_fLw&s",
+//                    averageRating = "88.99%",
+//                    type = "TV",
+//                    status = Status.FINISHED,
+//                    startDate = "1998-04-03",
+//                    ageRating = "R",
+//                    description = "In the year 2071, humanity has colonoized several of the planets and moons..."
+//                )
+//            ),
+//            episodesUiState = EpisodesUiState.Loading,
+//            categoryUiState = AnimeCategoryUiState.Loading,
+//            onNavigateUp = {}
+//        )
+//    }
+//}
 
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun LoadingPreview() {
+//    AniDexTheme {
+//        AnimeDetailScreen(
+//            detailUiState = AnimeDetailUiState.Loading,
+//            episodesUiState = EpisodesUiState.Loading,
+//            categoryUiState = AnimeCategoryUiState.Loading,
+//            onNavigateUp = {}
+//        )
+//    }
+//}

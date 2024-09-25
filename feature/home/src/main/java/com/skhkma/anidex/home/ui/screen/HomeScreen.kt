@@ -1,21 +1,19 @@
-package com.skhkma.anidex.features.home.ui.screen
+package com.skhkma.anidex.home.ui.screen
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -23,17 +21,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -46,10 +38,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.skhkma.anidex.anime.ui.AnimeRoute
 import com.skhkma.anidex.anime.ui.animeScreen
-import com.skhkma.anidex.designsystem.R
-import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.profile.ui.ProfileRoute
-import com.skhkma.anidex.profile.ui.ProfileTopAppBar
 import com.skhkma.anidex.profile.ui.profileScreen
 import kotlinx.serialization.Serializable
 
@@ -62,14 +51,20 @@ fun NavController.navigateToHomeScreen(
     navigate(HomeRoute, navOptions = navOptions)
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.homeScreen(
     onNavigateToManga: () -> Unit,
-    onNavigateToAuthLanding: () -> Unit
+    onNavigateToAuthLanding: () -> Unit,
+    onAnimeClick: (String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
 ) {
     composable<HomeRoute> {
         HomeScreen(
             onNavigateToManga = onNavigateToManga,
-            onNavigateToAuthLanding = onNavigateToAuthLanding
+            onNavigateToAuthLanding = onNavigateToAuthLanding,
+            onAnimeClick = onAnimeClick,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this
         )
     }
 }
@@ -83,12 +78,15 @@ private val topLevelRoutes = listOf(
     TopLevelRoute("Profile", ProfileRoute, Icons.Filled.Person)
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToManga: () -> Unit,
-    onNavigateToAuthLanding: () -> Unit
+    onNavigateToAuthLanding: () -> Unit,
+    onAnimeClick: (String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -117,7 +115,8 @@ private fun HomeScreen(
                         },
                         label = { Text(topLevelRoute.name) },
                         selected = currentDestination?.hierarchy?.any {
-                            it.hasRoute(topLevelRoute.route::class) } == true,
+                            it.hasRoute(topLevelRoute.route::class)
+                        } == true,
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.primary,
                             unselectedIconColor = Color.Gray,
@@ -180,8 +179,12 @@ private fun HomeScreen(
                     }
                 ) + fadeOut()
             },
-            ) {
-            animeScreen()
+        ) {
+            animeScreen(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
+                onAnimeClick = onAnimeClick
+            )
             mangaScreen()
             watchlistScreen()
             profileScreen(onNavigateToAuthLanding = onNavigateToAuthLanding)
@@ -190,13 +193,14 @@ private fun HomeScreen(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-private fun HomeScreenPreview() {
-    AniDexTheme {
-        HomeScreen(
-            onNavigateToManga = {},
-            onNavigateToAuthLanding = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun HomeScreenPreview() {
+//    AniDexTheme {
+//        HomeScreen(
+//            onNavigateToManga = {},
+//            onNavigateToAuthLanding = {},
+//            onAnimeClick = {}
+//        )
+//    }
+//}

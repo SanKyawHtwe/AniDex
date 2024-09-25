@@ -3,6 +3,13 @@ package com.skhkma.anidex.network.utils
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+import kotlinx.serialization.Serializable
+import org.checkerframework.checker.units.qual.A
+
+@Serializable
+data class AnidexApiResponse<T>(
+    val data: T?
+)
 
 internal suspend inline fun <reified T> handle(
     crossinline apiCall: suspend () -> HttpResponse
@@ -12,20 +19,17 @@ internal suspend inline fun <reified T> handle(
         when (httpResponse.status) {
             //200
             HttpStatusCode.OK -> {
-                //Success?
-                val response: T = httpResponse.body()
-                if (response != null) {
-                    return Result.success(response)
-                }
-
-                return Result.failure(
-                    ApiException(
-                        code = httpResponse.status.value,
-                        message = "Something went wrong"
+                val response: AnidexApiResponse<T> = httpResponse.body()
+                if (response.data != null) {
+                    return Result.success(response.data)
+                } else {
+                    return Result.failure(
+                        ApiException(
+                            code = httpResponse.status.value,
+                            message = "Response data being null!"
+                        )
                     )
-                )
-                //Fail or Success?
-
+                }
             }
 
             //404

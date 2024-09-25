@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.skhkma.anidex.anime"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 23
@@ -46,6 +46,7 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation (libs.koin.androidx.compose)
+    implementation(libs.koin.android)
     implementation(libs.androidx.lifecycle.runtime.compose)
     api(project(":core:data"))
     implementation(project(":core:model"))
