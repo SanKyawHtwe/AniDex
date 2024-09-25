@@ -1,12 +1,9 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.skhkma.anidex.features.onboarding
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import com.skhkma.anidex.R
+import com.skhkma.anidex.designsystem.theme.AniDexTheme
 import kotlinx.serialization.Serializable
 
 private const val PAGE_COUNT = 3

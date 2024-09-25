@@ -23,8 +23,7 @@ fun AniDexNavHost(
         val navController = rememberNavController()
         NavHost(
             navController = navController,
-            startDestination = HomeRoute
-//        if (isLoggedIn) HomeRoute else AuthNavRoute
+            startDestination = if (isLoggedIn) HomeRoute else AuthNavRoute
         ) {
             onboardingScreen(
                 onNavigateToAuthLanding = {

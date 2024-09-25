@@ -208,36 +208,21 @@ sealed class ValidateResult {
 const val MINIMUM_PASSWORD_LENGTH = 8
 const val MAXIMUM_PASSWORD_LENGTH = 40
 fun validatePassword(password: String): ValidateResult {
-    if (password.length < MINIMUM_PASSWORD_LENGTH) {
-        return ValidateResult.MinLengthError
-    }
-
-    if (password.length > MAXIMUM_PASSWORD_LENGTH) {
-        return ValidateResult.MaxLengthError
-    }
-
     val specialCharacterRegex = Regex("[!@#$%^&*(),.?\":{}|<>]")
-    val containsSpecialChar = password.any { specialCharacterRegex.containsMatchIn(it.toString()) }
-    if (!containsSpecialChar) {
-        return ValidateResult.SpecialCharError
-    }
 
-    val containDigits = password.any { it.isDigit() }
-    if (!containDigits) {
-        return ValidateResult.DigitError
-    }
-
-    val containLetters = password.any { it.isLetter() }
-    if (!containLetters) {
-        return ValidateResult.CharError
-    }
-
-    val containCapitalizedLetters = password.any { it.isLetter() && it.isUpperCase() }
-    if (!containCapitalizedLetters) {
-        return ValidateResult.CapitalCharError
-    }
-
-    return ValidateResult.Success
+    return if (password.length < MINIMUM_PASSWORD_LENGTH) {
+        ValidateResult.MinLengthError
+    } else if (password.length > MAXIMUM_PASSWORD_LENGTH) {
+        ValidateResult.MaxLengthError
+    } else if (!password.any { specialCharacterRegex.containsMatchIn(it.toString()) }) {
+        ValidateResult.SpecialCharError
+    } else if (!password.any { it.isDigit() }) {
+        ValidateResult.DigitError
+    } else if (!password.any { it.isLetter() }) {
+        ValidateResult.CharError
+    } else if (!password.any { it.isLetter() && it.isUpperCase() }) {
+        ValidateResult.CapitalCharError
+    } else ValidateResult.Success
 }
 
 @Preview
