@@ -1,5 +1,6 @@
 package com.skhkma.anidex.home.ui.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
@@ -34,10 +35,15 @@ fun FloatingNavigationBar(
             .padding(24.dp)
             .hazeChild(
                 state = hazeState,
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(32.dp),
                 style = HazeStyle(
                     blurRadius = 12.dp
                 )
+            )
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(32.dp)
             ),
         windowInsets = WindowInsets(0, 0, 0, 0),
         content = content
