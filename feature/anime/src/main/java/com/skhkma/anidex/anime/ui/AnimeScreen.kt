@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,6 +52,7 @@ data object AnimeRoute
 fun NavGraphBuilder.animeScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    paddingValues: PaddingValues,
     onAnimeClick: (String) -> Unit,
 ) {
     composable<AnimeRoute> {
@@ -60,6 +62,7 @@ fun NavGraphBuilder.animeScreen(
             uiState = uiState.value,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
+            paddingValues = paddingValues,
             onRetry = viewModel::fetchAnimeList,
             onAnimeClick = onAnimeClick
         )
@@ -73,11 +76,14 @@ private fun AnimeScreen(
     uiState: TrendingAnimeUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    paddingValues: PaddingValues,
     onRetry: () -> Unit,
     onAnimeClick: (String) -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .padding(top = paddingValues.calculateTopPadding())
     ) {
         Text(text = "Popular Anime")
 
