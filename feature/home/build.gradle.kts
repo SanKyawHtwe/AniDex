@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.haze)
     implementation(project(":core:model"))
     implementation(project(":core:designsystem"))
     api(project(":feature:anime"))
