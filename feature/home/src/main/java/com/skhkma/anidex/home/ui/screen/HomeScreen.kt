@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
@@ -16,13 +15,13 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,8 +37,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.skhkma.anidex.anime.ui.AnimeRoute
 import com.skhkma.anidex.anime.ui.animeScreen
+import com.skhkma.anidex.home.ui.components.FloatingNavigationBar
 import com.skhkma.anidex.profile.ui.ProfileRoute
 import com.skhkma.anidex.profile.ui.profileScreen
+import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -69,9 +72,9 @@ fun NavGraphBuilder.homeScreen(
     }
 }
 
-private data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
+data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
 
-private val topLevelRoutes = listOf(
+val topLevelRoutes = listOf(
     TopLevelRoute("Anime", AnimeRoute, Icons.Filled.Home),
     TopLevelRoute("Manga", MangaRoute, Icons.Filled.Face),
     TopLevelRoute("Watchlist", WatchlistRoute, Icons.Filled.Favorite),
@@ -91,6 +94,8 @@ private fun HomeScreen(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val hazeState = remember { HazeState() }
+
     Scaffold(
         modifier = modifier,
 //        topBar = {
@@ -103,48 +108,54 @@ private fun HomeScreen(
 //           }
 //        },
         bottomBar = {
-            NavigationBar {
-
-                topLevelRoutes.forEach { topLevelRoute ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                topLevelRoute.icon,
-                                contentDescription = topLevelRoute.name
-                            )
-                        },
-                        label = { Text(topLevelRoute.name) },
-                        selected = currentDestination?.hierarchy?.any {
-                            it.hasRoute(topLevelRoute.route::class)
-                        } == true,
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = Color.Gray,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedTextColor = Color.Gray
-                        ),
-                        onClick = {
-                            navController.navigate(topLevelRoute.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            FloatingNavigationBar(
+                hazeState = hazeState,
+                content = {
+                    topLevelRoutes.forEach { topLevelRoute ->
+                        NavigationBarItem(
+                            icon = {
+                                Icon(
+                                    topLevelRoute.icon,
+                                    contentDescription = topLevelRoute.name
+                                )
+                            },
+                            label = { Text(topLevelRoute.name) },
+                            selected = currentDestination?.hierarchy?.any {
+                                it.hasRoute(topLevelRoute.route::class)
+                            } == true,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = Color.Gray,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedTextColor = Color.Gray
+                            ),
+                            onClick = {
+                                navController.navigate(topLevelRoute.route) {
+                                    // Pop up to the start destination of the graph to
+                                    // avoid building up a large stack of destinations
+                                    // on the back stack as users select items
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    // Avoid multiple copies of the same destination when
+                                    // reselecting the same item
+                                    launchSingleTop = true
+                                    // Restore state when reselecting a previously selected item
+                                    restoreState = true
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
                             }
-                        }
-                    )
+                        )
+                    }
                 }
-            }
+            )
         }
     ) {
         NavHost(
-            modifier = Modifier.padding(it),
+            modifier = Modifier
+                .haze(
+                    state = hazeState,
+                    style = HazeDefaults.style(backgroundColor = MaterialTheme.colorScheme.surface),
+                ),
             navController = navController,
             startDestination = topLevelRoutes.first().route,
             enterTransition = {
@@ -183,6 +194,7 @@ private fun HomeScreen(
             animeScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
+                paddingValues = it,
                 onAnimeClick = onAnimeClick
             )
             mangaScreen()

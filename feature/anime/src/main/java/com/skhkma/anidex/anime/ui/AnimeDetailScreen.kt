@@ -9,7 +9,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,9 +18,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,6 +39,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -58,7 +61,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import coil.compose.AsyncImage
 import com.skhkma.anidex.model.AnimeDetailModel
-import com.skhkma.anidex.model.AnimeModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -113,6 +115,11 @@ fun AnimeDetailScreen(
     onNavigateUp: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollState = rememberScrollState()
+    val showIconsScrim = remember {
+        derivedStateOf { scrollBehavior.state.contentOffset > -4 }
+    }
+
     Scaffold(
         modifier = modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -121,13 +128,13 @@ fun AnimeDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 title = null,
                 scrollBehavior = scrollBehavior,
+                showIconsScrim = showIconsScrim.value,
                 onNavigateUp = onNavigateUp,
                 onFavouriteClick = {}
             )
         }
     ) { contentPadding ->
         if (detailUiState is AnimeDetailUiState.Success) {
-            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
@@ -302,6 +309,7 @@ private fun AnimeDetailsAppBar(
     title: String?,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
+    showIconsScrim: Boolean,
     onNavigateUp: () -> Unit,
     onFavouriteClick: () -> Unit
 ) {
@@ -318,27 +326,67 @@ private fun AnimeDetailsAppBar(
             scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp)
         ),
         navigationIcon = {
-            IconButton(
+            AnidexIconButton(
+                showScrim = showIconsScrim,
                 onClick = onNavigateUp
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         },
         actions = {
-            IconButton(
+            AnidexIconButton(
+                showScrim = showIconsScrim,
                 onClick = onFavouriteClick
             ) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
+    )
+}
+
+@Composable
+fun AnidexIconButton(
+    modifier: Modifier = Modifier,
+    showScrim: Boolean,
+    onClick: () -> Unit,
+    icon: @Composable () -> Unit
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        ScrimSurface(showScrim = showScrim) {
+            icon()
+        }
+    }
+}
+
+@Composable
+private fun ScrimSurface(
+    modifier: Modifier = Modifier,
+    showScrim: Boolean = true,
+    alpha: Float = 0.5f,
+    icon: @Composable () -> Unit,
+) {
+    Surface(
+        color = when {
+            showScrim -> MaterialTheme.colorScheme.surface.copy(alpha = alpha)
+            else -> Color.Transparent
+        },
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        shape = CircleShape,
+        modifier = modifier,
+        content = {
+            Box(Modifier.padding(4.dp)) {
+                icon()
+            }
+        },
     )
 }
 

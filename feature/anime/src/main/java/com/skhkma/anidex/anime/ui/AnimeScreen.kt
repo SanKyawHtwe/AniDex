@@ -5,16 +5,25 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -28,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -51,6 +61,7 @@ data object AnimeRoute
 fun NavGraphBuilder.animeScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    paddingValues: PaddingValues,
     onAnimeClick: (String) -> Unit,
 ) {
     composable<AnimeRoute> {
@@ -60,6 +71,7 @@ fun NavGraphBuilder.animeScreen(
             uiState = uiState.value,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
+            paddingValues = paddingValues,
             onRetry = viewModel::fetchAnimeList,
             onAnimeClick = onAnimeClick
         )
@@ -73,29 +85,60 @@ private fun AnimeScreen(
     uiState: TrendingAnimeUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    paddingValues: PaddingValues,
     onRetry: () -> Unit,
     onAnimeClick: (String) -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .padding(top = paddingValues.calculateTopPadding())
     ) {
-        Text(text = "Popular Anime")
+        VerticalGridSection(
+            title = "Popular Animes",
+            uiState = uiState,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            onRetry = onRetry,
+            onAnimeClick = onAnimeClick
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun VerticalGridSection(
+    modifier: Modifier = Modifier,
+    title: String,
+    uiState: TrendingAnimeUiState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    onRetry: () -> Unit,
+    onAnimeClick: (String) -> Unit
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(text = title)
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(240.dp)
+                .fillMaxHeight()
         ) {
             if (uiState is TrendingAnimeUiState.Success) {
-                LazyRow {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
                     items(
-                        items = uiState.animeList,
-                        key = {
-                            it.id
-                        }
-                    ) { item ->
+                        count = uiState.animeList.size,
+                        key = { uiState.animeList[it].id }
+                    ) { index ->
                         Anime(
-                            item = item,
+                            item = uiState.animeList[index],
                             sharedTransitionScope = sharedTransitionScope,
                             animatedContentScope = animatedContentScope,
                             onClick = onAnimeClick
@@ -141,8 +184,7 @@ fun Anime(
 
     Column(
         modifier = modifier
-            .width(150.dp)
-            .padding(horizontal = 4.dp, vertical = 0.dp)
+            .fillMaxWidth()
             .clickable { onClick(item.id) }
     ) {
         with(sharedTransitionScope) {
@@ -153,8 +195,8 @@ fun Anime(
                             sharedTransitionScope.rememberSharedContentState(key = "image-${item.id}"),
                             animatedVisibilityScope = animatedContentScope
                         )
-                        .width(150.dp)
-                        .height(200.dp),
+                        .aspectRatio(1/1.3f)
+                        .clip(RoundedCornerShape(16.dp)),
                     model = item.image,
                     contentScale = ContentScale.FillBounds,
                     contentDescription = null,
@@ -186,6 +228,7 @@ fun Anime(
             Text(
                 item.title,
                 modifier = Modifier
+                    .wrapContentWidth()
                     .sharedElement(
                         sharedTransitionScope.rememberSharedContentState(key = "text-${item.id}"),
                         animatedVisibilityScope = animatedContentScope,
