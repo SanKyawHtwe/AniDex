@@ -5,26 +5,27 @@ import com.skhkma.anidex.model.AnimeModel
 import com.skhkma.anidex.model.CategoryModel
 import com.skhkma.anidex.model.EpisodeModel
 import com.skhkma.anidex.network.datasource.AnimeRemoteDatasource
+import com.skhkma.anidex.network.paging.AnimePagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 
 internal class AnimeRepositoryImpl(
-    private val animeRemoteDatasource: AnimeRemoteDatasource
+    private val animeRemoteDatasource: AnimeRemoteDatasource,
 ) : AnimeRepository {
 
     private var cachedAnimeMap: Map<String, AnimeModel> = emptyMap()
 
-    override suspend fun getAnimeList(): Result<List<AnimeModel>> {
-        return animeRemoteDatasource.getAnimeList().also {
-            it.onSuccess { value ->
-                cachedAnimeMap = value.associateBy(
-                    { each -> each.id },
-                    { each -> each }
-                )
-            }
-        }
-    }
+//    override suspend fun getAnimeList(): Result<List<AnimeModel>> {
+//        return animeRemoteDatasource.getAnimeList().also {
+//            it.onSuccess { value ->
+//                cachedAnimeMap = value.associateBy(
+//                    { each -> each.id },
+//                    { each -> each }
+//                )
+//            }
+//        }
+//    }
 
     override suspend fun getCategories(id: String): Result<List<CategoryModel>> {
         return animeRemoteDatasource.getCategories(id = id)

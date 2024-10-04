@@ -7,8 +7,8 @@ import com.skhkma.anidex.model.EpisodeModel
 import com.skhkma.anidex.model.Status
 
 class MockAnimeDataSourceImpl : AnimeRemoteDatasource {
-    override suspend fun getAnimeList(): Result<List<AnimeModel>> {
-        return Result.success(emptyList())
+    override suspend fun getAnimeList(offset: Int): List<AnimeModel> {
+        return emptyList()
     }
 
     override suspend fun getCategories(id: String): Result<List<CategoryModel>> {

@@ -18,6 +18,7 @@ googleService = "4.4.2"
 crashlytics = "3.0.2"
 firebasePerf = "1.4.2"
 navigationCompose = "2.8.0-rc01"
+pagingRuntime = "3.3.2"
 uiTextGoogleFonts = "1.6.8"
 detektGradlePlugin = "1.23.3"
 ktor = "2.3.12"
@@ -29,6 +30,8 @@ jetbrainsKotlinJvm = "2.0.20"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntime" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
