@@ -4,7 +4,6 @@ import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.Serializable
-import org.checkerframework.checker.units.qual.A
 
 @Serializable
 data class AnidexApiResponse<T>(

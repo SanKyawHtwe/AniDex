@@ -16,6 +16,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
+import io.ktor.http.parameters
 
 internal class AnimeRemoteDataSourceImpl(
     private val httpClient: HttpClient
@@ -23,7 +24,13 @@ internal class AnimeRemoteDataSourceImpl(
 
     override suspend fun getAnimeList(): Result<List<AnimeModel>> {
         return handle<List<Anime>> {
-            httpClient.get("https://kitsu.io/api/edge/trending/anime")
+            httpClient.get("https://kitsu.io/api/edge/anime") {
+                header(HttpHeaders.Accept, "application/vnd.api+json")
+                url {
+                    parameters.append("page[limit]", "20")
+                    parameters.append("page[offset]", "2")
+                }
+            }
         }.map {
             it.map { anime ->
                 AnimeMapper.toDomain(anime)
