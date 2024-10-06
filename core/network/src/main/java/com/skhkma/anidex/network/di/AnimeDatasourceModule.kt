@@ -11,9 +11,4 @@ val animeDataSourceModule = module {
             httpClient = get()
         ) as AnimeRemoteDatasource
     }
-    single {
-        AnimePagingSource(
-            remoteDataSource = get()
-        )
-    }
 }

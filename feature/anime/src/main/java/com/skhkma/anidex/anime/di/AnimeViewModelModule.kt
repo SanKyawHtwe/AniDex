@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val animeViewModelModule = module {
     viewModel {
         AnimeViewModel(
-            animePagingSource = get()
+            animeRemoteDatasource = get()
         )
     }
 

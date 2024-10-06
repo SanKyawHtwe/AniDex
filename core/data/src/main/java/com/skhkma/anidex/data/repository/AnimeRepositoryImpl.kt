@@ -5,7 +5,6 @@ import com.skhkma.anidex.model.AnimeModel
 import com.skhkma.anidex.model.CategoryModel
 import com.skhkma.anidex.model.EpisodeModel
 import com.skhkma.anidex.network.datasource.AnimeRemoteDatasource
-import com.skhkma.anidex.network.paging.AnimePagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

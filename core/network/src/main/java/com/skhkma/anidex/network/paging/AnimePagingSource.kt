@@ -25,8 +25,11 @@ class AnimePagingSource(
 
     override fun getRefreshKey(state: PagingState<Int, AnimeModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+            // Assuming each page has a fixed size
+            val pageSize = state.config.pageSize
+
+            // Calculate the offset based on the anchor position
+            anchorPosition.div(pageSize) * pageSize
         }
     }
 

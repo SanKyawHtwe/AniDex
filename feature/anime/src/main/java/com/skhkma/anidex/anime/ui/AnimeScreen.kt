@@ -23,11 +23,13 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -112,7 +114,7 @@ private fun AnimeScreen(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun VerticalGridSection(
     modifier: Modifier = Modifier,
@@ -142,48 +144,64 @@ fun VerticalGridSection(
                 .fillMaxHeight()
         ) {
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = gridContentPadding,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+            var isRefreshing by remember(
+                key1 = pagingItems.loadState.refresh
             ) {
+                mutableStateOf(!pagingItems.loadState.isIdle && pagingItems.itemCount > 0)
+            }
 
-                items(
-                    count = pagingItems.itemCount,
-                    key = pagingItems.itemKey { it.id }
-                ) { index ->
-                    pagingItems[index]?.let {
-                        Anime(
-                            item = it,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedContentScope = animatedContentScope,
-                            onClick = onAnimeClick
-                        )
+            PullToRefreshBox(
+                modifier = Modifier.fillMaxWidth(),
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    pagingItems.refresh()
+                },
+                contentAlignment = Alignment.TopEnd
+            ) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = gridContentPadding,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+
+                    items(
+                        count = pagingItems.itemCount,
+                        key = pagingItems.itemKey { it.id }
+                    ) { index ->
+                        pagingItems[index]?.let {
+                            Anime(
+                                item = it,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedContentScope = animatedContentScope,
+                                onClick = onAnimeClick
+                            )
+                        }
                     }
-                }
 
-                if (pagingItems.loadState.append == LoadState.Loading) {
-                    item(span = { GridItemSpan(this.maxLineSpan) }) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .height(64.dp)
-                                .wrapContentWidth()
-                        )
+                    if (pagingItems.loadState.append == LoadState.Loading && pagingItems.itemCount > 0) {
+                        item(span = { GridItemSpan(this.maxLineSpan) }) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .height(64.dp)
+                                    .wrapContentWidth()
+                            )
+                        }
                     }
-                }
 
-                if (pagingItems.loadState.hasError && (pagingItems.itemCount > 0)) {
-                    item(span = { GridItemSpan(this.maxLineSpan) }) {
-                        ErrorView(
-                            modifier = Modifier.align(Alignment.Center),
-                            onRetry = onRetry
-                        )
+                    if (pagingItems.loadState.hasError && (pagingItems.itemCount > 0)) {
+                        item(span = { GridItemSpan(this.maxLineSpan) }) {
+                            ErrorView(
+                                modifier = Modifier.align(Alignment.Center),
+                                onRetry = onRetry
+                            )
+                        }
                     }
                 }
             }
 
-            if (pagingItems.loadState.refresh == LoadState.Loading) {
+            if (pagingItems.loadState.refresh == LoadState.Loading && pagingItems.itemCount == 0) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .width(64.dp)
