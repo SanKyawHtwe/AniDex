@@ -7,7 +7,7 @@ import com.skhkma.anidex.model.EpisodeModel
 import kotlinx.coroutines.flow.Flow
 
 interface AnimeRepository {
-    suspend fun getAnimeList() : Result<List<AnimeModel>>
+//    suspend fun getAnimeList() : Result<List<AnimeModel>>
 
     suspend fun getCategories(id: String): Result<List<CategoryModel>>
 

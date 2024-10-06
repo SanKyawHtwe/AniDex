@@ -1,5 +1,6 @@
 package com.skhkma.anidex.anime.ui
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -18,18 +19,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,13 +41,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.skhkma.anidex.designsystem.R
 import com.skhkma.anidex.designsystem.theme.AniDexTheme
@@ -66,13 +71,13 @@ fun NavGraphBuilder.animeScreen(
 ) {
     composable<AnimeRoute> {
         val viewModel: AnimeViewModel = koinViewModel()
-        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+        val lazyPagingItems = viewModel.flow.collectAsLazyPagingItems()
         AnimeScreen(
-            uiState = uiState.value,
+            pagingItems = lazyPagingItems,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
             paddingValues = paddingValues,
-            onRetry = viewModel::fetchAnimeList,
+            onRetry = { lazyPagingItems.retry() },
             onAnimeClick = onAnimeClick
         )
     }
@@ -82,7 +87,7 @@ fun NavGraphBuilder.animeScreen(
 @Composable
 private fun AnimeScreen(
     modifier: Modifier = Modifier,
-    uiState: TrendingAnimeUiState,
+    pagingItems: LazyPagingItems<AnimeModel>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     paddingValues: PaddingValues,
@@ -96,57 +101,113 @@ private fun AnimeScreen(
     ) {
         VerticalGridSection(
             title = "Popular Animes",
-            uiState = uiState,
+            pagingItems = pagingItems,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
+            gridContentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = paddingValues.calculateBottomPadding()
+            ),
             onRetry = onRetry,
             onAnimeClick = onAnimeClick
         )
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun VerticalGridSection(
     modifier: Modifier = Modifier,
     title: String,
-    uiState: TrendingAnimeUiState,
+    pagingItems: LazyPagingItems<AnimeModel>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    gridContentPadding: PaddingValues,
     onRetry: () -> Unit,
     onAnimeClick: (String) -> Unit
 ) {
     Column(
         modifier = modifier
     ) {
-        Text(text = title)
+        Text(
+            text = title,
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp, bottom = 8.dp),
+            style = MaterialTheme.typography.titleLarge
+        )
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
         ) {
-            if (uiState is TrendingAnimeUiState.Success) {
+
+            var isRefreshing by remember(
+                key1 = pagingItems.loadState.refresh
+            ) {
+                mutableStateOf(!pagingItems.loadState.isIdle && pagingItems.itemCount > 0)
+            }
+
+            PullToRefreshBox(
+                modifier = Modifier.fillMaxWidth(),
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    pagingItems.refresh()
+                },
+                contentAlignment = Alignment.TopEnd
+            ) {
+                val orientation = LocalConfiguration.current.orientation
+
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
+                    columns = GridCells.Fixed(
+                        if (orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+                    ),
+                    contentPadding = gridContentPadding,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
+
                     items(
-                        count = uiState.animeList.size,
-                        key = { uiState.animeList[it].id }
+                        count = pagingItems.itemCount,
+                        key = pagingItems.itemKey { it.id }
                     ) { index ->
-                        Anime(
-                            item = uiState.animeList[index],
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedContentScope = animatedContentScope,
-                            onClick = onAnimeClick
-                        )
+                        pagingItems[index]?.let {
+                            Anime(
+                                item = it,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedContentScope = animatedContentScope,
+                                onClick = onAnimeClick
+                            )
+                        }
+                    }
+
+                    if (pagingItems.loadState.append == LoadState.Loading && pagingItems.itemCount > 0) {
+                        item(span = { GridItemSpan(this.maxLineSpan) }) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .height(64.dp)
+                                    .wrapContentWidth()
+                            )
+                        }
+                    }
+
+                    if (pagingItems.loadState.hasError && (pagingItems.itemCount > 0)) {
+                        item(span = { GridItemSpan(this.maxLineSpan) }) {
+                            ErrorView(
+                                modifier = Modifier.align(Alignment.Center),
+                                onRetry = onRetry
+                            )
+                        }
                     }
                 }
             }
-            if (uiState is TrendingAnimeUiState.Loading) {
+
+            if (pagingItems.loadState.refresh == LoadState.Loading && pagingItems.itemCount == 0) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .width(64.dp)
@@ -157,7 +218,7 @@ fun VerticalGridSection(
                 )
             }
 
-            if (uiState is TrendingAnimeUiState.Error) {
+            if (pagingItems.loadState.hasError && pagingItems.itemCount == 0) {
                 ErrorView(
                     modifier = Modifier.align(Alignment.Center),
                     onRetry = onRetry
@@ -195,7 +256,7 @@ fun Anime(
                             sharedTransitionScope.rememberSharedContentState(key = "image-${item.id}"),
                             animatedVisibilityScope = animatedContentScope
                         )
-                        .aspectRatio(1/1.3f)
+                        .aspectRatio(1 / 1.3f)
                         .clip(RoundedCornerShape(16.dp)),
                     model = item.image,
                     contentScale = ContentScale.FillBounds,

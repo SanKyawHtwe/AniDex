@@ -3,6 +3,17 @@ package com.skhkma.anidex.network.model
 import kotlinx.serialization.Serializable
 
 @Serializable
+internal data class PagingResponse<T>(
+    val data: List<T>,
+    val meta: Meta
+)
+
+@Serializable
+internal data class Meta(
+    val count: Int
+)
+
+@Serializable
 internal data class Anime(
     val id: String,
     val type: String?,

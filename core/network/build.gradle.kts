@@ -41,6 +41,8 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation (libs.koin.androidx.compose)
+    implementation (libs.androidx.paging.runtime)
+    implementation (libs.androidx.paging.compose)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

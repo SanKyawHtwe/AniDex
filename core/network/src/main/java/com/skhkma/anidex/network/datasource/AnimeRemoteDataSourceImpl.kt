@@ -11,8 +11,10 @@ import com.skhkma.anidex.network.model.Anime
 import com.skhkma.anidex.network.model.AnimeDetailData
 import com.skhkma.anidex.network.model.CategoryResponse
 import com.skhkma.anidex.network.model.EpisodeResponse
+import com.skhkma.anidex.network.model.PagingResponse
 import com.skhkma.anidex.network.utils.handle
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -22,20 +24,15 @@ internal class AnimeRemoteDataSourceImpl(
     private val httpClient: HttpClient
 ) : AnimeRemoteDatasource {
 
-    override suspend fun getAnimeList(): Result<List<AnimeModel>> {
-        return handle<List<Anime>> {
-            httpClient.get("https://kitsu.io/api/edge/anime") {
+    override suspend fun getAnimeList(offset: Int): List<AnimeModel> {
+        val response: PagingResponse<Anime> = httpClient.get("https://kitsu.io/api/edge/anime") {
                 header(HttpHeaders.Accept, "application/vnd.api+json")
                 url {
-                    parameters.append("page[limit]", "20")
-                    parameters.append("page[offset]", "2")
+                    parameters.append("page[limit]", "10")
+                    parameters.append("page[offset]", "$offset")
                 }
-            }
-        }.map {
-            it.map { anime ->
-                AnimeMapper.toDomain(anime)
-            }
-        }
+            }.body()
+        return response.data.map { AnimeMapper.toDomain(it) }
     }
 
     override suspend fun getCategories(id: String): Result<List<CategoryModel>> {

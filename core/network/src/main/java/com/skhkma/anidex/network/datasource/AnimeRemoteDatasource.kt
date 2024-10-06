@@ -6,7 +6,7 @@ import com.skhkma.anidex.model.CategoryModel
 import com.skhkma.anidex.model.EpisodeModel
 
 interface AnimeRemoteDatasource {
-    suspend fun getAnimeList(): Result<List<AnimeModel>>
+    suspend fun getAnimeList(offset: Int): List<AnimeModel>
 
     suspend fun getCategories(id: String): Result<List<CategoryModel>>
 
