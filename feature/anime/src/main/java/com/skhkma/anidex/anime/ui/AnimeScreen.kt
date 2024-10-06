@@ -1,5 +1,6 @@
 package com.skhkma.anidex.anime.ui
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -159,8 +161,12 @@ fun VerticalGridSection(
                 },
                 contentAlignment = Alignment.TopEnd
             ) {
+                val orientation = LocalConfiguration.current.orientation
+
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+                    columns = GridCells.Fixed(
+                        if (orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+                    ),
                     contentPadding = gridContentPadding,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
