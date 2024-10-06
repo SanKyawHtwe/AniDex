@@ -125,8 +125,8 @@ fun VerticalGridSection(
             text = title,
             modifier = Modifier
                 .wrapContentWidth()
-                .padding(16.dp)
-                .background(Color.Blue),
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp, bottom = 8.dp),
             style = MaterialTheme.typography.titleLarge
         )
 
