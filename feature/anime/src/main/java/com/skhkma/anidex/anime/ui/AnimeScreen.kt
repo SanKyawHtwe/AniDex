@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -74,7 +73,7 @@ fun NavGraphBuilder.animeScreen(
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
             paddingValues = paddingValues,
-            onRetry = {},
+            onRetry = { lazyPagingItems.retry() },
             onAnimeClick = onAnimeClick
         )
     }
@@ -101,6 +100,12 @@ private fun AnimeScreen(
             pagingItems = pagingItems,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
+            gridContentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = paddingValues.calculateBottomPadding()
+            ),
             onRetry = onRetry,
             onAnimeClick = onAnimeClick
         )
@@ -115,6 +120,7 @@ fun VerticalGridSection(
     pagingItems: LazyPagingItems<AnimeModel>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    gridContentPadding: PaddingValues,
     onRetry: () -> Unit,
     onAnimeClick: (String) -> Unit
 ) {
@@ -138,7 +144,7 @@ fun VerticalGridSection(
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = gridContentPadding,
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
@@ -166,6 +172,15 @@ fun VerticalGridSection(
                         )
                     }
                 }
+
+                if (pagingItems.loadState.hasError && (pagingItems.itemCount > 0)) {
+                    item(span = { GridItemSpan(this.maxLineSpan) }) {
+                        ErrorView(
+                            modifier = Modifier.align(Alignment.Center),
+                            onRetry = onRetry
+                        )
+                    }
+                }
             }
 
             if (pagingItems.loadState.refresh == LoadState.Loading) {
@@ -179,43 +194,12 @@ fun VerticalGridSection(
                 )
             }
 
-//            if (uiState is TrendingAnimeUiState.Success) {
-//                LazyVerticalGrid(
-//                    columns = GridCells.Fixed(2),
-//                    contentPadding = PaddingValues(16.dp),
-//                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                    verticalArrangement = Arrangement.spacedBy(16.dp),
-//                ) {
-//                    items(
-//                        count = uiState.animeList.size,
-//                        key = { uiState.animeList[it].id }
-//                    ) { index ->
-//                        Anime(
-//                            item = uiState.animeList[index],
-//                            sharedTransitionScope = sharedTransitionScope,
-//                            animatedContentScope = animatedContentScope,
-//                            onClick = onAnimeClick
-//                        )
-//                    }
-//                }
-//            }
-//            if (uiState is TrendingAnimeUiState.Loading) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier
-//                        .width(64.dp)
-//                        .align(Alignment.Center),
-//                    color = MaterialTheme.colorScheme.secondary,
-//                    strokeCap = StrokeCap.Butt,
-//                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-//                )
-//            }
-//
-//            if (uiState is TrendingAnimeUiState.Error) {
-//                ErrorView(
-//                    modifier = Modifier.align(Alignment.Center),
-//                    onRetry = onRetry
-//                )
-//            }
+            if (pagingItems.loadState.hasError && pagingItems.itemCount == 0) {
+                ErrorView(
+                    modifier = Modifier.align(Alignment.Center),
+                    onRetry = onRetry
+                )
+            }
         }
     }
 }
