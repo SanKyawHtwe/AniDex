@@ -149,7 +149,11 @@ fun VerticalGridSection(
             var isRefreshing by remember(
                 key1 = pagingItems.loadState.refresh
             ) {
-                mutableStateOf(!pagingItems.loadState.isIdle && pagingItems.itemCount > 0)
+                mutableStateOf(
+                    !pagingItems.loadState.hasError &&
+                            !pagingItems.loadState.isIdle &&
+                            pagingItems.itemCount > 0
+                )
             }
 
             PullToRefreshBox(
